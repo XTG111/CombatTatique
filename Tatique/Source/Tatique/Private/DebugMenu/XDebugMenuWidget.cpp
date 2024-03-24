@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "DebugMenu/X_TAB_ConsoleCommandWidget.h"
 
 void UXDebugMenuWidget::NativeConstruct()
 {

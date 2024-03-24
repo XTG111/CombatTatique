@@ -44,7 +44,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* TextBlock_0Info;
 	UPROPERTY(meta = (BindWidget))
-		UTextBlock* TextBlock_Tab1Info;
+		class UX_TAB_ConsoleCommandWidget* W_TAB_ConsoleComments;
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* TextBlock_Tab2Info;
 	UPROPERTY(meta = (BindWidget))
