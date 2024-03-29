@@ -31,4 +31,5 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Debug")
 		TSubclassOf<class UUserWidget> DebugMenuWdgClass;
 
+
 };

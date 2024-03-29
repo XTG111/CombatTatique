@@ -36,12 +36,12 @@ void AXPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//²åÖµÆ½»¬
-	SpringArmComp->TargetArmLength = UKismetMathLibrary::FInterpTo(SpringArmComp->TargetArmLength, Zoom_Desired, DeltaTime, 2.0f);
+	SpringArmComp->TargetArmLength = UKismetMathLibrary::FInterpTo(SpringArmComp->TargetArmLength, Zoom_Desired, DeltaTime, ZoomInterp);
 	
-	FVector TargetLoc = UKismetMathLibrary::VInterpTo(GetActorLocation(), Location_Desired, DeltaTime, 5.0f);
+	FVector TargetLoc = UKismetMathLibrary::VInterpTo(GetActorLocation(), Location_Desired, DeltaTime, LocationInterp);
 	SetActorLocation(TargetLoc);
 
-	FRotator TargetRot = UKismetMathLibrary::RInterpTo(GetActorRotation(), Rotation_Desired, DeltaTime, 5.0f);
+	FRotator TargetRot = UKismetMathLibrary::RInterpTo(GetActorRotation(), Rotation_Desired, DeltaTime, RotationInterp);
 	SetActorRotation(TargetRot);
 
 }
@@ -61,32 +61,32 @@ void AXPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AXPawn::Zoom(float value)
 {
-	float temp = -20.0f * value;
+	float temp = -1.0f * ZoomSpeed * value;
 	Zoom_Desired += temp;
-	Zoom_Desired = UKismetMathLibrary::Clamp(Zoom_Desired, 100.0f, 1500.0f);
+	Zoom_Desired = UKismetMathLibrary::Clamp(Zoom_Desired, ZoomMin, ZoomMax);
 }
 
 void AXPawn::MoveForward(float value)
 {
-	FVector temp = GetActorForwardVector() * value * 20.0;
+	FVector temp = GetActorForwardVector() * value * LocationSpeed;
 	Location_Desired += temp;
 }
 
 void AXPawn::MoveRight(float value)
 {
-	FVector temp = GetActorRightVector() * value * 20.0;
+	FVector temp = GetActorRightVector() * value * RotationSpeed;
 	Location_Desired += temp;
 }
 
 void AXPawn::RotationRight()
 {
-	FRotator temp = UKismetMathLibrary::MakeRotator(0.0f, 0.0f, -45.0f);
+	FRotator temp = UKismetMathLibrary::MakeRotator(0.0f, 0.0f, -1.0f*RotationSpeed);
 	Rotation_Desired += temp;
 }
 
 void AXPawn::RotationLeft()
 {
-	FRotator temp = UKismetMathLibrary::MakeRotator(0.0f, 0.0f, 45.0f);
+	FRotator temp = UKismetMathLibrary::MakeRotator(0.0f, 0.0f, RotationSpeed);
 	Rotation_Desired += temp;
 }
 

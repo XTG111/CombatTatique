@@ -3,6 +3,9 @@
 
 #include "DebugMenu/XDebugMenuActor.h"
 #include "Kismet/GameplayStatics.h"
+#include "DebugMenu/XDebugMenuWidget.h"
+#include "DebugMenu/XCameraDebugWidget.h"
+#include "DebugMenu/XSpinwithNameWidget.h"
 
 // Sets default values
 AXDebugMenuActor::AXDebugMenuActor()

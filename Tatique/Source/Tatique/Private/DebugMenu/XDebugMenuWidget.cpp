@@ -7,6 +7,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "DebugMenu/X_TAB_ConsoleCommandWidget.h"
+#include "DebugMenu/XCameraDebugWidget.h"
 
 void UXDebugMenuWidget::NativeConstruct()
 {
@@ -14,6 +15,9 @@ void UXDebugMenuWidget::NativeConstruct()
 	Button_Tab1->SetBackgroundColor(FLinearColor::Black);
 	Button_Tab2->SetBackgroundColor(FLinearColor::Black);
 	Button_Tab3->SetBackgroundColor(FLinearColor::Black);
+	TextBlock_Tab1->SetText(FText::FromString("Command"));
+	TextBlock_Tab2->SetText(FText::FromString("Camera"));
+	//UE_LOG(LogTemp, Warning, TEXT("The XDebugMenuWidget"));
 
 	if (Button_Tab1)
 	{

@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "XPawn.generated.h"
 
+
 UCLASS()
 class TATIQUE_API AXPawn : public APawn
 {
@@ -51,4 +52,23 @@ public:
 	//Ðý×ª
 	void RotationRight();
 	void RotationLeft();
+
+//±äÁ¿
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float LocationSpeed = 40.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float LocationInterp = 5.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float RotationSpeed = 45.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float RotationInterp = 5.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ZoomSpeed = 20.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ZoomInterp = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ZoomMin = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ZoomMax = 1500.0f;
 };

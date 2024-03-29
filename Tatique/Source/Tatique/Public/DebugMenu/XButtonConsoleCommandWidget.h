@@ -27,6 +27,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TextBlock_ConsoleCommand;
 
+public:
 	FString Console_Command;
 	
 };
