@@ -83,4 +83,20 @@ public:
 		class UDataTable* DT_GridDateTable;
 	//所使用的Enum
 	UEnum* MyEnumPtr;
+
+public:
+	//将V1向V2的值接近，想让Grid群的中心和Grid的大小一致
+	FVector SnapVectorToVector(const FVector& V1, const FVector& V2);
+	//判断是否被2整除
+	bool IsFloatEven(float value);
+	bool IsIntEven(int value);
+
+	//获取Grid的群的中心位置和左下角遍历起点
+	void CalculateCenterAndBottomLeft(FVector& CenterLoc, FVector& BottomLeftLoc);
+	//获取某个Grid的位置
+	FVector GetTileLocationFromGridIndex(int x, int y);
+	//获取某个Grid的旋转偏移
+	FVector GetTileRotationFromGridIndex(int x, int y);
+	//绘制
+	void SetTileGrid(int x, int y, const FGridShapeStruct* curGrid);
 };
