@@ -44,15 +44,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-#if WITH_EDITOR
-	virtual void OnConstruction(const FTransform& Transform) override;
-#endif
+//#if WITH_EDITOR
+//	virtual void OnConstruction(const FTransform& Transform) override;
+//#endif
 
 	//销毁模板
 	void DestroyGrid();
 
 	//生成Grid
-	void SpawnGrid();
+	void SpawnGrid(const FVector& pCenterLocation,const FVector& pTileSize, const FVector2D& pTileCount, const EGridShapEnum& pGridShape);
 
 	//获取当前enum对应的Data数据
 	struct FGridShapeStruct* GetCurrentGridShape(EGridShapEnum GridShapeIns);
@@ -74,7 +74,7 @@ public:
 		FVector2D TileCount = { 10,10 };
 	//枚举类型 Grid的Shape
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EGridShapEnum GridShape = EGridShapEnum::EGS_Squard;
+		EGridShapEnum GridShape = EGridShapEnum::EGS_Square;
 	//生成位置的起始点，默认设置为左下角
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FVector GridBottomLeftCornerLoc;

@@ -16,8 +16,6 @@ AXGrid::AXGrid()
 	InstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("InstancedMeshComponent"));
 
 	MyEnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EGridShapEnum"), true);
-	
-
 }
 
 
@@ -35,12 +33,6 @@ void AXGrid::Tick(float DeltaTime)
 
 }
 
-void AXGrid::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-	SpawnGrid();
-}
-
 void AXGrid::DestroyGrid()
 {
 	if (InstancedMeshComponent)
@@ -49,18 +41,17 @@ void AXGrid::DestroyGrid()
 	}
 }
 
-void AXGrid::SpawnGrid()
+void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize, const FVector2D& pTileCount, const EGridShapEnum& pGridShape)
 {
-	CenterLocation = GetActorLocation();
-	TileSize = TileSize;
-	TileCount.X = UKismetMathLibrary::Round(TileCount.X);
-	TileCount.Y = UKismetMathLibrary::Round(TileCount.Y);
-
-	GridShape = GridShape;
+	this->CenterLocation = pCenterLocation;
+	this->TileSize = pTileSize;
+	this->TileCount.X = UKismetMathLibrary::Round(pTileCount.X);
+	this->TileCount.Y = UKismetMathLibrary::Round(pTileCount.Y);
+	this->GridShape = pGridShape;
 
 	DestroyGrid();
 
-	FGridShapeStruct* curGrid = GetCurrentGridShape(GridShape);
+	FGridShapeStruct* curGrid = GetCurrentGridShape(pGridShape);
 
 	if (!curGrid)
 	{
@@ -72,7 +63,7 @@ void AXGrid::SpawnGrid()
 	InstancedMeshComponent->SetMaterial(0, curGrid->FlatBorderMaterial);
 	
 	//寻找生成起点，左下角
-	CalculateCenterAndBottomLeft(CenterLocation, GridBottomLeftCornerLoc);
+	CalculateCenterAndBottomLeft(this->CenterLocation, GridBottomLeftCornerLoc);
 
 	//x,y方向循环生成
 	for (int i = 0; i < TileCount.X - 1; i++)
@@ -134,7 +125,7 @@ void AXGrid::CalculateCenterAndBottomLeft(FVector& CenterLoc, FVector& BottomLef
 	FVector div;
 	switch (GridShape)
 	{
-	case EGridShapEnum::EGS_Squard:
+	case EGridShapEnum::EGS_Square:
 
 		//中心点需要与Grid的大小匹配
 		CenterLoc = SnapVectorToVector(CenterLoc, TileSize);
@@ -180,7 +171,7 @@ FVector AXGrid::GetTileLocationFromGridIndex(int x, int y)
 	FVector multemp;
 	switch (GridShape)
 	{
-	case EGridShapEnum::EGS_Squard:
+	case EGridShapEnum::EGS_Square:
 		multemp = { x * 1.0f,y * 1.0f,0.0f };
 		break;
 	case EGridShapEnum::EGS_Triangle:

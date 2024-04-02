@@ -48,7 +48,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UXCameraDebugWidget* W_TAB_CameraControl;
 	UPROPERTY(meta = (BindWidget))
-		UTextBlock* TextBlock_Tab3Info;
+		class UXTabGridControl* W_TAB_GridControl;
 
 	FLinearColor BackgroudColor;
 	FLinearColor BackgroundColorOther;
