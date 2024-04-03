@@ -35,6 +35,36 @@ public:
 		class UXSpinwithGrid2Param* W_GridControl_TileCount;
 	UPROPERTY(meta = (BindWidget))
 		class  UComboBoxString* ComboBoxString_GridShape;
+
+	//For Debug
+
+	//Delay Time
+	FTimerHandle DebugDelayTime;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_Debug;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_DrawLines;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_Bounds;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_Center;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_GridCenter;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_Bottom_Left;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_BottomLeft;
+	UPROPERTY(meta = (BindWidget))
+		class UCheckBox* CheckBox_Center;
+	UPROPERTY(meta = (BindWidget))
+		UCheckBox* CheckBox_Bottom_Left;
+	UPROPERTY(meta = (BindWidget))
+		UCheckBox* CheckBox_Bounds;
+
+	UFUNCTION()
+		void DrawDebugLines();
+
 public:
 	UFUNCTION()
 		void OnValueChange2(FVector2D value);
@@ -59,23 +89,5 @@ public:
 
 	FTimerHandle DelayTimer;
 	FString GetStringByEnum(int EnumValue);
-
-public:
-	UFUNCTION()
-		void LocXValue(float value);
-	UFUNCTION()
-		void LocYValue(float value);
-	UFUNCTION()
-		void LocZValue(float value);
-	UFUNCTION()
-		void SizeXValue(float value);
-	UFUNCTION()
-		void SizeYValue(float value);
-	UFUNCTION()
-		void SizeZValue(float value);
-	UFUNCTION()
-		void CountXValue(float value);
-	UFUNCTION()
-		void CountYValue(float value);
 
 };
