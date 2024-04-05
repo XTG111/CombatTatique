@@ -4,6 +4,8 @@
 #include "SpawnGrid/XGrid.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 
 // Sets default values
 AXGrid::AXGrid()
@@ -41,12 +43,12 @@ void AXGrid::DestroyGrid()
 	}
 }
 
-void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize, const FVector2D& pTileCount, const EGridShapEnum& pGridShape)
+void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize, const FIntPoint& pTileCount, const EGridShapEnum& pGridShape, bool bUseEnv)
 {
 	this->CenterLocation = pCenterLocation;
 	this->TileSize = pTileSize;
-	this->TileCount.X = UKismetMathLibrary::Round(pTileCount.X);
-	this->TileCount.Y = UKismetMathLibrary::Round(pTileCount.Y);
+	this->TileCount.X = pTileCount.X;
+	this->TileCount.Y = pTileCount.Y;
 	this->GridShape = pGridShape;
 
 	DestroyGrid();
@@ -62,6 +64,8 @@ void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize,
 	InstancedMeshComponent->SetStaticMesh(curGrid->FlatMesh);
 	InstancedMeshComponent->SetMaterial(0, curGrid->FlatBorderMaterial);
 	
+	SetGridOffset(Offset);
+
 	//寻找生成起点，左下角
 	CalculateCenterAndBottomLeft(this->CenterLocation, GridBottomLeftCornerLoc);
 
@@ -71,10 +75,10 @@ void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize,
 		if (GridShape == EGridShapEnum::EGS_Hexagon)
 		{
 			int k = IsIntEven(i) ? 0 : 1;
-			int bor = UKismetMathLibrary::Round(TileCount.Y) * 2 - 1;
+			int bor = TileCount.Y * 2 - 1;
 			for (int j = k; j < bor;)
 			{
-				SetTileGrid(i, j, curGrid);
+				SetTileGrid(i, j, curGrid, bUseEnv);
 				j += 2;
 			}
 		}
@@ -82,7 +86,7 @@ void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize,
 		{
 			for (int j = 0; j < TileCount.Y - 1; j++)
 			{
-				SetTileGrid(i, j, curGrid);
+				SetTileGrid(i, j, curGrid, bUseEnv);
 			}
 		}
 	}
@@ -120,8 +124,8 @@ bool AXGrid::IsIntEven(int value)
 void AXGrid::CalculateCenterAndBottomLeft(FVector& CenterLoc, FVector& BottomLeftLoc)
 {
 	FVector multemp;
-	float tempx;
-	float tempy;
+	int tempx;
+	int tempy;
 	FVector div;
 	switch (GridShape)
 	{
@@ -132,8 +136,8 @@ void AXGrid::CalculateCenterAndBottomLeft(FVector& CenterLoc, FVector& BottomLef
 
 		//计算左下角起始位置，中心点先左下方向回退x/2 和 y/2个Grid大小
 		//1. 首先判断当前x,y方向上个数是否为偶数
-		tempx = IsFloatEven(TileCount.X) ? TileCount.X : TileCount.X - 1.0f;
-		tempy = IsFloatEven(TileCount.Y) ? TileCount.Y : TileCount.Y - 1.0f;
+		tempx = IsIntEven(TileCount.X) ? TileCount.X : TileCount.X - 1;
+		tempy = IsIntEven(TileCount.Y) ? TileCount.Y : TileCount.Y - 1;
 		div = { TileSize.X * tempx / 2,TileSize.Y * tempy / 2,0.0f };
 
 		BottomLeftLoc = CenterLoc - div;
@@ -200,13 +204,80 @@ FVector AXGrid::GetTileRotationFromGridIndex(int x, int y)
 	}
 }
 
-void AXGrid::SetTileGrid(int x, int y, const FGridShapeStruct* curGrid)
+void AXGrid::SetTileGrid(int x, int y, const FGridShapeStruct* curGrid, bool bUseEnv)
 {
 	FTransform TileTransform;
 	TileTransform.SetLocation(GetTileLocationFromGridIndex(x,y));
 	TileTransform.SetRotation(FQuat::MakeFromEuler(GetTileRotationFromGridIndex(x, y)));
 	TileTransform.SetScale3D(TileSize / (curGrid->MeshSize));
+	if (!bUseEnv)
+	{
+		InstancedMeshComponent->AddInstance(TileTransform);
+	}
+	else
+	{
+		FTransform curTileTransform;
+		if (TraceForGround(TileTransform, curTileTransform))
+		{
+			InstancedMeshComponent->AddInstance(curTileTransform);
+		}
+	}
+	
+}
 
-	InstancedMeshComponent->AddInstanceWorldSpace(TileTransform);
+bool AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLocation)
+{
+	float Radius;
+	float divtemp;
+	if (GridShape != EGridShapEnum::EGS_Triangle) divtemp = 3.0f;
+	else divtemp = 5.0f;
+	Radius = TileSize.X / divtemp;
+
+	TArray<FHitResult> HitResults;
+	FVector temp = { 0.0f,0.0f,500.0f };
+	FVector Start = Location.GetLocation() + temp;
+	FVector End = Location.GetLocation() - temp;
+
+	FName TraceChannelName = "Ground";
+	UKismetSystemLibrary::SphereTraceMulti(
+		GetWorld(),
+		Start,
+		End,
+		Radius,
+		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1),
+		false,
+		TArray<AActor*>(),
+		EDrawDebugTrace::None,
+		HitResults,
+		true
+	);
+
+	if (HitResults.Num() <= 0)
+	{
+		OutLocation = Location;
+		return false;
+	}
+	else
+	{
+			FVector curLoc = HitResults[0].Location;
+			OutLocation.SetRotation(Location.GetRotation());
+			OutLocation.SetScale3D(Location.GetScale3D());
+			FVector res;
+			res.X = curLoc.X;
+			res.Y = curLoc.Y;
+			res.Z = UKismetMathLibrary::GridSnap_Float(curLoc.Z - Radius, TileSize.Z);
+			OutLocation.SetLocation(res);
+			return true;
+	}
+}
+
+void AXGrid::SetGridOffset(float ofs)
+{
+	Offset = ofs;
+	if (InstancedMeshComponent)
+	{
+		FVector Loc = { 0.0f,0.0f,Offset };
+		InstancedMeshComponent->SetWorldLocation(Loc, false, false);
+	}
 }
 

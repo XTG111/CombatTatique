@@ -52,12 +52,13 @@ public:
 	void DestroyGrid();
 
 	//生成Grid
-	void SpawnGrid(const FVector& pCenterLocation,const FVector& pTileSize, const FVector2D& pTileCount, const EGridShapEnum& pGridShape);
+	void SpawnGrid(const FVector& pCenterLocation,const FVector& pTileSize, const FIntPoint& pTileCount, const EGridShapEnum& pGridShape, bool bUseEnv);
 
 	//获取当前enum对应的Data数据
 	struct FGridShapeStruct* GetCurrentGridShape(EGridShapEnum GridShapeIns);
 
 public:
+
 	UPROPERTY(VisibleAnywhere, Category = MySceneComponent)
 		class USceneComponent* DefaultSceneRoot;
 	//Grid Static Mesh
@@ -71,13 +72,17 @@ public:
 		FVector TileSize = { 100.0f,100.0f,100.0f };
 	//生成个数以x和y分别记录
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector2D TileCount = { 10,10 };
+		FIntPoint TileCount = { 10,10 };
 	//枚举类型 Grid的Shape
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		EGridShapEnum GridShape = EGridShapEnum::EGS_Square;
 	//生成位置的起始点，默认设置为左下角
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FVector GridBottomLeftCornerLoc;
+	//偏移量
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Offset = 2.0f;
+
 	//所使用的DataTable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UDataTable* DT_GridDateTable;
@@ -98,5 +103,11 @@ public:
 	//获取某个Grid的旋转偏移
 	FVector GetTileRotationFromGridIndex(int x, int y);
 	//绘制
-	void SetTileGrid(int x, int y, const FGridShapeStruct* curGrid);
+	void SetTileGrid(int x, int y, const FGridShapeStruct* curGrid, bool bUseEnv);
+	//判断方格
+	bool TraceForGround(const FTransform& Location, FTransform& OutLocation);
+	//设置偏移
+	UFUNCTION()
+		void SetGridOffset(float ofs);
+	
 };

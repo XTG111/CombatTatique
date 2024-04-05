@@ -47,3 +47,8 @@ void UXSpinwithGrid3Param::SelfOnValueChange(float chvalue)
 	this->Value.Z = SpinBox_Value_Z->GetValue();
 	MyOnValueChange.Broadcast(this->Value);
 }
+
+void UXSpinwithGrid3Param::SetDefaultValue(const FVector& dvalue)
+{
+	this->Value = dvalue;
+}

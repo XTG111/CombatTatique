@@ -46,6 +46,8 @@ public:
 	UFUNCTION()
 		void SelfOnValueChange(float chvalue);
 
+	void SetDefaultValue(const FVector& dvalue);
+
 	UPROPERTY(VisibleAnywhere)
 		FMyOnValueChange3 MyOnValueChange;
 	TArray<USpinBox*> SpinBoxList;

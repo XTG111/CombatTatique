@@ -41,3 +41,8 @@ void UXSpinwithGrid2Param::SelfOnValueChange(float chvalue)
 	this->Value.Y = SpinBox_Value_Y->GetValue();
 	MyOnValueChange.Broadcast(this->Value);
 }
+
+void UXSpinwithGrid2Param::SetDefauleValue(const FVector2D& dvalue)
+{
+	this->Value = dvalue;
+}

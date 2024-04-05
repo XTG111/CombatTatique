@@ -28,6 +28,8 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UXSpinwithNameWidget* W_SpinBox_ReGenDelay;
 	UPROPERTY(meta = (BindWidget))
+		class UXSpinwithNameWidget* W_SpinBox_Offset;
+	UPROPERTY(meta = (BindWidget))
 		class UXSpinwithGrid3Param* W_GridControl_Location;
 	UPROPERTY(meta = (BindWidget))
 		UXSpinwithGrid3Param* W_GridControl_TileSize;
@@ -55,6 +57,8 @@ public:
 		UTextBlock* TextBlock_Bottom_Left;
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* TextBlock_BottomLeft;
+
+
 	UPROPERTY(meta = (BindWidget))
 		class UCheckBox* CheckBox_Center;
 	UPROPERTY(meta = (BindWidget))
@@ -62,8 +66,22 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		UCheckBox* CheckBox_Bounds;
 
+	UPROPERTY(meta = (BindWidget))
+		UCheckBox* CheckBox_UseEnv;
+
 	UFUNCTION()
 		void DrawDebugLines();
+
+	//Enviorment
+	UPROPERTY(VisibleAnywhere)
+		class AXLevelLoadActor* LLevelIns;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_Enviorment;
+	UPROPERTY(meta = (BindWidget))
+		UComboBoxString* ComboBoxString_LevelMap;
+	UFUNCTION()
+		void LoadLevel(FString SelectedItem, ESelectInfo::Type SelectionType);
 
 public:
 	UFUNCTION()
@@ -76,6 +94,10 @@ public:
 		void SetDelatValue(float value);
 	UFUNCTION()
 		void SetDefaultValue();
+	UFUNCTION()
+		void CheckChanged(bool bIsChecked);
+	UFUNCTION()
+		void SetGridOffset(float value);
 	UFUNCTION()
 		void SpawnGrid();
 

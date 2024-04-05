@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SpinBox.h"
 #include "Components/CheckBox.h"
+#include "LevelLoad/XLevelLoadActor.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -26,11 +27,16 @@ void UXTabGridControl::NativeConstruct()
 		return;
 	}
 
+	LLevelIns = Cast<AXLevelLoadActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AXLevelLoadActor::StaticClass()));
+	if (!LLevelIns)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No LLevelIns!!!!!!!"));
+		return;
+	}
 	
 	SetDefaultValue();
 	SpawnGrid();
 	GetWorld()->GetTimerManager().SetTimer(DebugDelayTime, this, &UXTabGridControl::DrawDebugLines, 0.5f, true);
-
 	BindFunction();
 }
 
@@ -38,6 +44,7 @@ void UXTabGridControl::BindFunction()
 {
 	ComboBoxString_GridShape->OnSelectionChanged.AddDynamic(this, &UXTabGridControl::OnSelectionChange);
 	
+	ComboBoxString_LevelMap->OnSelectionChanged.AddDynamic(this, &UXTabGridControl::LoadLevel);
 
 	W_GridControl_Location->Value = GridIns->CenterLocation;
 	W_GridControl_Location->SetSpinBox();
@@ -52,7 +59,12 @@ void UXTabGridControl::BindFunction()
 	W_GridControl_TileCount->SetSpinBox();
 	W_GridControl_TileCount->MyOnValueChange.AddDynamic(this, &UXTabGridControl::OnValueChange2);
 
+	CheckBox_UseEnv->OnCheckStateChanged.AddDynamic(this, &UXTabGridControl::CheckChanged);
 	
+	W_SpinBox_Offset->Value = GridIns->Offset;
+	W_SpinBox_Offset->SetSpinBox();
+	W_SpinBox_Offset->SpinBox_Value->OnValueChanged.AddDynamic(this, &UXTabGridControl::SetGridOffset);
+
 	if(W_SpinBox_ReGenDelay)
 	{
 		W_SpinBox_ReGenDelay->Value = DTime;
@@ -85,6 +97,11 @@ void UXTabGridControl::DrawDebugLines()
 	{
 		DrawDebugBox(GetWorld(), GridInsCenterLoc, GridInsCenterLoc-GridInsBottomLeftLoc, FColor::Green, false, 0.5f, 0, 10.0f);
 	}
+}
+
+void UXTabGridControl::LoadLevel(FString SelectedItem, ESelectInfo::Type SelectionType)
+{
+	LLevelIns->LoadLevel(SelectedItem, true);
 }
 
 void UXTabGridControl::OnValueChange2(FVector2D value)
@@ -131,9 +148,9 @@ void UXTabGridControl::SetDelatValue(float value)
 void UXTabGridControl::SetDefaultValue()
 {
 	if (!GridIns) return;
-	W_GridControl_Location->Value = GridIns->CenterLocation;
-	W_GridControl_TileSize->Value = GridIns->TileSize;
-	W_GridControl_TileCount->Value = GridIns->TileCount;
+	W_GridControl_Location->SetDefaultValue(GridIns->CenterLocation);
+	W_GridControl_TileSize->SetDefaultValue(GridIns->TileSize);
+	W_GridControl_TileCount->SetDefauleValue(GridIns->TileCount);
 	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EGridShapEnum"), true);
 	if (!EnumPtr)
 	{
@@ -141,6 +158,20 @@ void UXTabGridControl::SetDefaultValue()
 	}
 	ComboBoxString_GridShape->SetSelectedOption(EnumPtr->GetDisplayNameTextByValue((int64)GridIns->GridShape).ToString());
 	//UE_LOG(LogTemp, Warning, TEXT("GridIns!!!!!!!,%s"), *(EnumPtr->GetDisplayNameTextByValue((int64)GridIns->GridShape).ToString()));
+	ComboBoxString_LevelMap->SetSelectedOption(LLevelIns->LevelLoaded);
+}
+
+void UXTabGridControl::CheckChanged(bool bIsChecked)
+{
+	SpawnGrid();
+}
+
+void UXTabGridControl::SetGridOffset(float value)
+{
+	if (GridIns)
+	{
+		GridIns->SetGridOffset(value);
+	}
 }
 
 void UXTabGridControl::SpawnGrid()
@@ -157,9 +188,11 @@ void UXTabGridControl::SpawnGrid()
 	{
 		FVector CenterLocation = W_GridControl_Location->Value;
 		FVector TileSize = W_GridControl_TileSize->Value;
-		FVector2D TileCount = W_GridControl_TileCount->Value;
+		FIntPoint TileCount;
+		TileCount.X = FMath::RoundToInt(W_GridControl_TileCount->Value.X);
+		TileCount.Y = FMath::RoundToInt(W_GridControl_TileCount->Value.Y);
 		EGridShapEnum GridShape = curEnum;
-		GridIns->SpawnGrid(CenterLocation, TileSize, TileCount, GridShape);
+		GridIns->SpawnGrid(CenterLocation, TileSize, TileCount, GridShape, CheckBox_UseEnv->IsChecked());
 	}
 }
 

@@ -44,6 +44,8 @@ public:
 	UFUNCTION()
 		void SelfOnValueChange(float chvalue);
 
+	void SetDefauleValue(const FVector2D& dvalue);
+
 	UPROPERTY(VisibleAnywhere)
 		FMyOnValueChange2 MyOnValueChange;
 

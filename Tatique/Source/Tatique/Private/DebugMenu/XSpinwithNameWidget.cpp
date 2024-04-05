@@ -36,3 +36,8 @@ void UXSpinwithNameWidget::SetSpinBox()
 	SpinBox_Value->SetAlwaysUsesDeltaSnap(AlwaysUsesDeltaSnap);
 	SpinBox_Value->SetDelta(Delta);
 }
+
+void UXSpinwithNameWidget::SteDefaultValue(const float dvalue)
+{
+	this->Value = dvalue;
+}

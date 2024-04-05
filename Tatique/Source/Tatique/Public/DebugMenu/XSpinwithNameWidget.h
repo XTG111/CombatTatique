@@ -51,4 +51,6 @@ public:
 		bool AlwaysUsesDeltaSnap = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Delta;
+
+	void SteDefaultValue(const float dvalue);
 };
