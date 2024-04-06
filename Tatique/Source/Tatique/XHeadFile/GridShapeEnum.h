@@ -7,3 +7,11 @@ enum class EGridShapEnum : uint8
 	EGS_Triangle UMETA(DisplayName = "Triangle"),
 	EGS_Hexagon UMETA(DisplayName = "Hexagon"),
 };
+
+UENUM(BlueprintType)
+enum class ETileType :uint8
+{
+	ETT_None UMETA(DisplayName = "None"),
+	ETT_Normal UMETA(DisplayName = "Normal"),
+	ETT_Obstacle UMETA(DisplayName = "Obstacle"),
+};

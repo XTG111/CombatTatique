@@ -5,6 +5,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "SpawnGrid/XGridModifier.h"
 
 
 // Sets default values
@@ -217,7 +218,7 @@ void AXGrid::SetTileGrid(int x, int y, const FGridShapeStruct* curGrid, bool bUs
 	else
 	{
 		FTransform curTileTransform;
-		if (TraceForGround(TileTransform, curTileTransform))
+		if (IsTileTypeWalkable(TraceForGround(TileTransform, curTileTransform)))
 		{
 			InstancedMeshComponent->AddInstance(curTileTransform);
 		}
@@ -225,7 +226,7 @@ void AXGrid::SetTileGrid(int x, int y, const FGridShapeStruct* curGrid, bool bUs
 	
 }
 
-bool AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLocation)
+ETileType AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLocation)
 {
 	float Radius;
 	float divtemp;
@@ -255,19 +256,45 @@ bool AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLocation)
 	if (HitResults.Num() <= 0)
 	{
 		OutLocation = Location;
-		return false;
+		return ETileType::ETT_None;
 	}
 	else
 	{
-			FVector curLoc = HitResults[0].Location;
-			OutLocation.SetRotation(Location.GetRotation());
-			OutLocation.SetScale3D(Location.GetScale3D());
-			FVector res;
-			res.X = curLoc.X;
-			res.Y = curLoc.Y;
-			res.Z = UKismetMathLibrary::GridSnap_Float(curLoc.Z - Radius, TileSize.Z);
-			OutLocation.SetLocation(res);
-			return true;
+		ETileType RetType = ETileType::ETT_None;
+		FVector res;
+		for (auto hit : HitResults)
+		{
+			AXGridModifier* XGMActor = Cast<AXGridModifier>(hit.Actor);
+			if (XGMActor == nullptr)
+			{
+				FVector curLoc = hit.Location;
+				res.Z = UKismetMathLibrary::GridSnap_Float(curLoc.Z - Radius, TileSize.Z);
+				OutLocation.SetRotation(Location.GetRotation());
+				OutLocation.SetScale3D(Location.GetScale3D());
+				res.X = hit.Location.X;
+				res.Y = hit.Location.Y;
+				OutLocation.SetLocation(res);
+			}
+			else
+			{
+				
+				RetType = XGMActor->TileTypeIns;
+			}
+		}
+		return RetType;
+	}
+}
+
+bool AXGrid::IsTileTypeWalkable(const ETileType& type)
+{
+	if (type == ETileType::ETT_Normal || type == ETileType::ETT_None)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ETileType::ETT_Normal"));
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 

@@ -4,28 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Engine/DataTable.h"
+#include "Pawn/XStructInfo.h"
 #include "D:/UnrealProject/CombatTatique_W/CombatTatique/Tatique/Source/Tatique/XHeadFile/GridShapeEnum.h"
 #include "XGrid.generated.h"
-
-
-USTRUCT(BlueprintType)
-struct FGridShapeStruct : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-		FVector MeshSize;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-		class UStaticMesh* Mesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-		class UMaterialInterface* MeshMaterial;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-		UStaticMesh* FlatMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-		UMaterialInterface* FlatBorderMaterial;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-		UMaterialInterface* FlayFilledMaterial;
-};
 
 UCLASS()
 class TATIQUE_API AXGrid : public AActor
@@ -69,7 +50,7 @@ public:
 		FVector CenterLocation = { 0.0f,0.0f,0.0f };
 	//Grid的大小
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector TileSize = { 100.0f,100.0f,100.0f };
+		FVector TileSize = { 100.0f,100.0f,50.0f };
 	//生成个数以x和y分别记录
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FIntPoint TileCount = { 10,10 };
@@ -105,7 +86,9 @@ public:
 	//绘制
 	void SetTileGrid(int x, int y, const FGridShapeStruct* curGrid, bool bUseEnv);
 	//判断方格
-	bool TraceForGround(const FTransform& Location, FTransform& OutLocation);
+	ETileType TraceForGround(const FTransform& Location, FTransform& OutLocation);
+
+	bool IsTileTypeWalkable(const ETileType& type);
 	//设置偏移
 	UFUNCTION()
 		void SetGridOffset(float ofs);
