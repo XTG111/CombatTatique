@@ -25,9 +25,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-//#if WITH_EDITOR
-//	virtual void OnConstruction(const FTransform& Transform) override;
-//#endif
+#if WITH_EDITOR
+	virtual void OnConstruction(const FTransform& Transform) override;
+#endif
 
 	//销毁模板
 	void DestroyGrid();
@@ -42,9 +42,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = MySceneComponent)
 		class USceneComponent* DefaultSceneRoot;
-	//Grid Static Mesh
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class UInstancedStaticMeshComponent* InstancedMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UChildActorComponent* ChildActor_GridVisual;
+	UPROPERTY(VisibleAnywhere)
+		class AXGridVisiual* XGridVisual;
+
 	//Grid生成中心
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector CenterLocation = { 0.0f,0.0f,0.0f };
@@ -69,6 +72,8 @@ public:
 		class UDataTable* DT_GridDateTable;
 	//所使用的Enum
 	UEnum* MyEnumPtr;
+	//Map
+	TMap<FIntPoint, FTileDataStruct> GridTiles;
 
 public:
 	//将V1向V2的值接近，想让Grid群的中心和Grid的大小一致
@@ -88,9 +93,5 @@ public:
 	//判断方格
 	ETileType TraceForGround(const FTransform& Location, FTransform& OutLocation);
 
-	bool IsTileTypeWalkable(const ETileType& type);
-	//设置偏移
-	UFUNCTION()
-		void SetGridOffset(float ofs);
-	
+	void AddGridTile(FTileDataStruct TileData);
 };

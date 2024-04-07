@@ -39,6 +39,7 @@ void UXTabGridControl::NativeConstruct()
 	SpawnGrid();
 	GetWorld()->GetTimerManager().SetTimer(DebugDelayTime, this, &UXTabGridControl::DrawDebugLines, 0.5f, true);
 	BindFunction();
+	//SetDefaultValue();
 }
 
 void UXTabGridControl::BindFunction()
@@ -149,11 +150,11 @@ void UXTabGridControl::SetDelatValue(float value)
 void UXTabGridControl::SetDefaultValue()
 {
 	if (!GridIns) return;
-	W_GridControl_Location->Value = GridIns->CenterLocation;
+	W_GridControl_Location->SetDefaultValue(GridIns->CenterLocation);
 	W_GridControl_Location->SetSpinBox();
-	W_GridControl_TileSize->Value = GridIns->TileSize;
+	W_GridControl_TileSize->SetDefaultValue(GridIns->TileSize);
 	W_GridControl_TileSize->SetSpinBox();
-	W_GridControl_TileCount->Value = GridIns->TileCount;
+	W_GridControl_TileCount->SetDefauleValue(GridIns->TileCount);
 	W_GridControl_TileCount->SetSpinBox();
 	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EGridShapEnum"), true);
 	if (!EnumPtr)

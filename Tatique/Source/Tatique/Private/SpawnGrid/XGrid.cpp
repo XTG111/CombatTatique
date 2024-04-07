@@ -5,7 +5,9 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Components/ChildActorComponent.h"
 #include "SpawnGrid/XGridModifier.h"
+#include "SpawnGrid/XGridVisiual.h"
 
 
 // Sets default values
@@ -16,7 +18,11 @@ AXGrid::AXGrid()
 
 	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("MyRootComponent"));
 	RootComponent = DefaultSceneRoot;
-	InstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("InstancedMeshComponent"));
+
+	ChildActor_GridVisual = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActor_GridVisual"));
+	ChildActor_GridVisual->SetupAttachment(RootComponent);
+
+	//InstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("InstancedMeshComponent"));
 
 	MyEnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EGridShapEnum"), true);
 }
@@ -36,16 +42,32 @@ void AXGrid::Tick(float DeltaTime)
 
 }
 
+void AXGrid::OnConstruction(const FTransform& Transform)
+{
+	if (!ChildActor_GridVisual) return;
+	XGridVisual = Cast<AXGridVisiual>(ChildActor_GridVisual->GetChildActor());
+	if (!XGridVisual) return;
+	SpawnGrid(GetActorLocation(), TileSize, TileCount, GridShape, true);
+
+}
+
+void AXGrid::AddGridTile(FTileDataStruct TileData)
+{
+	GridTiles.Add(TileData.Index, TileData);
+	if (!XGridVisual) return;
+	XGridVisual->UpdateTileVisual(TileData);
+}
+
 void AXGrid::DestroyGrid()
 {
-	if (InstancedMeshComponent)
-	{
-		InstancedMeshComponent->ClearInstances();
-	}
+	if (!XGridVisual) return;
+	GridTiles.Empty();
+	XGridVisual->DestroyGridVisual();
 }
 
 void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize, const FIntPoint& pTileCount, const EGridShapEnum& pGridShape, bool bUseEnv)
 {
+	if (!XGridVisual) return;
 	this->CenterLocation = pCenterLocation;
 	this->TileSize = pTileSize;
 	this->TileCount.X = pTileCount.X;
@@ -53,6 +75,7 @@ void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize,
 	this->GridShape = pGridShape;
 
 	DestroyGrid();
+	XGridVisual->InitializeGridVisual(this);
 
 	FGridShapeStruct* curGrid = GetCurrentGridShape(pGridShape);
 
@@ -61,11 +84,6 @@ void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize,
 		UE_LOG(LogTemp, Warning, TEXT("No curGrid"));
 		return;
 	}
-
-	InstancedMeshComponent->SetStaticMesh(curGrid->FlatMesh);
-	InstancedMeshComponent->SetMaterial(0, curGrid->FlatBorderMaterial);
-	
-	SetGridOffset(Offset);
 
 	//寻找生成起点，左下角
 	CalculateCenterAndBottomLeft(this->CenterLocation, GridBottomLeftCornerLoc);
@@ -208,20 +226,23 @@ FVector AXGrid::GetTileRotationFromGridIndex(int x, int y)
 void AXGrid::SetTileGrid(int x, int y, const FGridShapeStruct* curGrid, bool bUseEnv)
 {
 	FTransform TileTransform;
+	FIntPoint index = { x,y };
 	TileTransform.SetLocation(GetTileLocationFromGridIndex(x,y));
 	TileTransform.SetRotation(FQuat::MakeFromEuler(GetTileRotationFromGridIndex(x, y)));
 	TileTransform.SetScale3D(TileSize / (curGrid->MeshSize));
+
 	if (!bUseEnv)
 	{
-		InstancedMeshComponent->AddInstance(TileTransform);
+		FTileDataStruct data{ index,ETileType::ETT_Normal ,TileTransform };
+		AddGridTile(data);
 	}
 	else
 	{
 		FTransform curTileTransform;
-		if (IsTileTypeWalkable(TraceForGround(TileTransform, curTileTransform)))
-		{
-			InstancedMeshComponent->AddInstance(curTileTransform);
-		}
+		ETileType type = TraceForGround(TileTransform, curTileTransform);
+		FTileDataStruct data{ index,type,curTileTransform };
+		AddGridTile(data);
+		
 	}
 	
 }
@@ -260,7 +281,7 @@ ETileType AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLoca
 	}
 	else
 	{
-		ETileType RetType = ETileType::ETT_None;
+		ETileType RetType = ETileType::ETT_Normal;
 		FVector res;
 		for (auto hit : HitResults)
 		{
@@ -285,26 +306,4 @@ ETileType AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLoca
 	}
 }
 
-bool AXGrid::IsTileTypeWalkable(const ETileType& type)
-{
-	if (type == ETileType::ETT_Normal || type == ETileType::ETT_None)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ETileType::ETT_Normal"));
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-void AXGrid::SetGridOffset(float ofs)
-{
-	Offset = ofs;
-	if (InstancedMeshComponent)
-	{
-		FVector Loc = { 0.0f,0.0f,Offset };
-		InstancedMeshComponent->SetWorldLocation(Loc, false, false);
-	}
-}
 

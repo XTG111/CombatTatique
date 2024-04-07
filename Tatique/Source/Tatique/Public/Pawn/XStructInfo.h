@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
+#include "D:/UnrealProject/CombatTatique_W/CombatTatique/Tatique/Source/Tatique/XHeadFile/GridShapeEnum.h"
 #include "XStructInfo.generated.h"
 
 
@@ -24,6 +25,22 @@ struct FGridShapeStruct : public FTableRowBase
 		UMaterialInterface* FlatBorderMaterial;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		UMaterialInterface* FlayFilledMaterial;
+};
+
+USTRUCT(BlueprintType)
+struct FTileDataStruct : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+	FTileDataStruct(){}
+	FTileDataStruct(FIntPoint index, ETileType type, FTransform transform):
+		Index(index),Type(type),Transform(transform)
+	{}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		FIntPoint Index;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		ETileType Type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		FTransform Transform;
 };
 
 UCLASS()
