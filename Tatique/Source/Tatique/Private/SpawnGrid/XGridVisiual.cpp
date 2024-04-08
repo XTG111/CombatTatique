@@ -45,7 +45,7 @@ void AXGridVisiual::InitializeGridVisual(AXGrid* XGrid)
 	XGridMeshInst->InitializeGridMeshInst(XGridIns->GetCurrentGridShape(XGridIns->GridShape)->FlatMesh,
 		XGridIns->GetCurrentGridShape(XGridIns->GridShape)->FlatBorderMaterial,
 		FColor::Black,
-		ECollisionEnabled::NoCollision
+		ECollisionEnabled::QueryOnly
 	);
 
 	FVector loc{ 0.0f,0.0f,0.0f };

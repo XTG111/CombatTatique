@@ -5,6 +5,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/ChildActorComponent.h"
 #include "SpawnGrid/XGridModifier.h"
 #include "SpawnGrid/XGridVisiual.h"
@@ -305,5 +306,105 @@ ETileType AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLoca
 		return RetType;
 	}
 }
+
+FVector AXGrid::GetCursorLocationOnGrid(int playerindex)
+{
+	FHitResult HitResults;
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), playerindex);
+	if (!PlayerController) return FVector();
+	bool HitValue = PlayerController->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel2), false, HitResults);
+	if (HitValue)
+	{
+		return HitResults.ImpactPoint;
+	}
+	else
+	{
+		FVector WorldLocation;
+		FVector WorldDirction;
+		//获取鼠标在屏幕空间的世界坐标
+		bool RValue = PlayerController->DeprojectMousePositionToWorld(WorldLocation, WorldDirction);
+		
+		//定义网格平面
+		FVector Normal = { 0.0f,0.0f,1.0f };
+		FPlane plane = UKismetMathLibrary::MakePlaneFromPointAndNormal(CenterLocation, Normal);
+
+		//计算平面和射线的交点
+		FVector LineStart = WorldLocation;
+		FVector LineEnd = WorldLocation + 999999.0f * WorldDirction;
+		FVector Intersection;
+		float T;
+		bool value = UKismetMathLibrary::LinePlaneIntersection(LineStart, LineEnd, plane, T, Intersection);
+		if (value)
+		{
+			return Intersection;
+		}
+		else
+		{
+			FVector res = { -999.0f,-999.0f,-999.0f };
+			return res;
+		}
+	}
+}
+
+FIntPoint AXGrid::GetTileIndexFromWorldLocation(FVector vetor)
+{
+	FVector LocationOnGrid = vetor - GridBottomLeftCornerLoc;
+	FVector2D TileSizeVector2D = { TileSize.X,TileSize.Y };
+	FVector2D SnappedLocationOnGrid;
+	FVector temp;
+	FVector div1;
+	FVector div2;
+	FIntPoint res;
+	FVector2D a;
+	FVector2D tempindex;
+	switch (GridShape)
+	{
+	case EGridShapEnum::EGS_None:
+		res.X = -999;
+		res.Y = -999;
+		break;
+	case EGridShapEnum::EGS_Square:
+		temp = SnapVectorToVector(LocationOnGrid, TileSize);
+		SnappedLocationOnGrid = { temp.X,temp.Y };
+		res.X = FMath::RoundToInt((SnappedLocationOnGrid / TileSizeVector2D).X);
+		res.Y = FMath::RoundToInt((SnappedLocationOnGrid / TileSizeVector2D).Y);
+		break;
+	case EGridShapEnum::EGS_Triangle:
+		div2 = { 1.0f,2.0f,1.0f };
+		temp = SnapVectorToVector(LocationOnGrid, TileSize / div2);
+		SnappedLocationOnGrid = { temp.X,temp.Y };
+		res.X = FMath::RoundToInt((SnappedLocationOnGrid / TileSizeVector2D).X * 1.0f);
+		res.Y = FMath::RoundToInt((SnappedLocationOnGrid / TileSizeVector2D).Y * 2.0f);
+		break;
+	case EGridShapEnum::EGS_Hexagon:
+		div1 = { 1.0f,2.0f,1.0f };
+		div2 = { 0.75f,0.25f,1.0f };
+		temp = SnapVectorToVector(LocationOnGrid / div1, TileSize / div2);
+		SnappedLocationOnGrid = { temp.X,temp.Y };
+		a = { 0.75f,1.0f };
+		tempindex = SnappedLocationOnGrid / (TileSizeVector2D * a);
+		if (IsFloatEven(tempindex.X))
+		{
+			res.X = FMath::TruncToInt(tempindex.X);
+			res.Y = FMath::TruncToInt(2 * FMath::RoundToInt(tempindex.Y / 2.0f));
+		}
+		else
+		{
+			res.X = FMath::TruncToInt(tempindex.X);
+			res.Y = FMath::TruncToInt(1 + 2 * FMath::RoundToInt(tempindex.Y / 2.0f));
+		}
+		break;
+	default:
+		break;
+	}
+	return res;
+}
+
+FIntPoint AXGrid::GetTileIndexUnderCursor(int playerindex)
+{
+	FVector loc = GetCursorLocationOnGrid(playerindex);
+	return GetTileIndexFromWorldLocation(loc);
+}
+
 
 

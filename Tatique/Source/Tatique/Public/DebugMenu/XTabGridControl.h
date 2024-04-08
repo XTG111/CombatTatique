@@ -69,6 +69,15 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		UCheckBox* CheckBox_UseEnv;
 
+	UPROPERTY(meta = (BindWidget))
+		UCheckBox* CheckBox_Mouse_Location;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_MouseLocation;
+	UPROPERTY(meta = (BindWidget))
+		UCheckBox* CheckBox_Hovered_Tile;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_HoveredTile;
+
 	UFUNCTION()
 		void DrawDebugLines();
 

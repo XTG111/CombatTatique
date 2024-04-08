@@ -93,5 +93,11 @@ public:
 	//判断方格
 	ETileType TraceForGround(const FTransform& Location, FTransform& OutLocation);
 
+	//网格吸附鼠标
+	FVector GetCursorLocationOnGrid(int playerindex);
+	FIntPoint GetTileIndexFromWorldLocation(FVector vetor);
+	FIntPoint GetTileIndexUnderCursor(int playerindex);
+
+
 	void AddGridTile(FTileDataStruct TileData);
 };

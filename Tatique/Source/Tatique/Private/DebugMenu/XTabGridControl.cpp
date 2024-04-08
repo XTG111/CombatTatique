@@ -98,6 +98,19 @@ void UXTabGridControl::DrawDebugLines()
 	{
 		DrawDebugBox(GetWorld(), GridInsCenterLoc, GridInsCenterLoc-GridInsBottomLeftLoc, FColor::Green, false, 0.5f, 0, 10.0f);
 	}
+	FVector loc = GridIns->GetCursorLocationOnGrid(0);
+	TextBlock_MouseLocation->SetText(FText::FromString(FString::Printf(TEXT("%f, %f, %f"), loc.X, loc.Y, loc.Z)));
+	if (CheckBox_Mouse_Location->IsChecked())
+	{
+		DrawDebugSphere(GetWorld(), loc, 10.0f, 5, FColor::Green, false, 0.1f, 5.0f);
+	}
+	FIntPoint ip = GridIns->GetTileIndexUnderCursor(0);
+	TextBlock_HoveredTile->SetText(FText::FromString(FString::Printf(TEXT("%d, %d"), ip.X, ip.Y)));
+	if (CheckBox_Hovered_Tile->IsChecked() && GridIns->GridTiles.Find(ip))
+	{
+		FVector Extent = { 35.0f,35.0f,5.0f };
+		DrawDebugBox(GetWorld(), GridIns->GridTiles.Find(ip)->Transform.GetLocation(), Extent, FColor::Purple, false, 0.1f, 5.0f);
+	}
 }
 
 void UXTabGridControl::LoadLevel(FString SelectedItem, ESelectInfo::Type SelectionType)
