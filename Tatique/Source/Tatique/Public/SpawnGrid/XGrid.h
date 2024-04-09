@@ -98,6 +98,10 @@ public:
 	FIntPoint GetTileIndexFromWorldLocation(FVector vetor);
 	FIntPoint GetTileIndexUnderCursor(int playerindex);
 
+	//选择网格增加属性
+	void AddStateToTile(const FIntPoint& index, const ETileState& state);
+	//移除网格选择属性
+	void RemoveStateFromTile(const FIntPoint& index, const ETileState& state);
 
-	void AddGridTile(FTileDataStruct TileData);
+	void AddGridTile(FTileDataStruct* TileData);
 };

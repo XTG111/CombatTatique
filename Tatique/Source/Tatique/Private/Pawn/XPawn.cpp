@@ -5,6 +5,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SpawnGrid/XGrid.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AXPawn::AXPawn()
@@ -29,6 +31,9 @@ void AXPawn::BeginPlay()
 	Location_Desired = GetActorLocation();
 	Zoom_Desired = SpringArmComp->TargetArmLength;
 	Rotation_Desired = GetActorRotation();
+
+	GridIns = Cast<AXGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AXGrid::StaticClass()));
+	//EnableInput(UGameplayStatics::GetPlayerController(GetWorld(),0));
 }
 
 // Called every frame
@@ -44,6 +49,8 @@ void AXPawn::Tick(float DeltaTime)
 	FRotator TargetRot = UKismetMathLibrary::RInterpTo(GetActorRotation(), Rotation_Desired, DeltaTime, RotationInterp);
 	SetActorRotation(TargetRot);
 
+	UpdateHoveredTile();
+
 }
 
 // Called to bind functionality to input
@@ -56,6 +63,8 @@ void AXPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("RotationRight", IE_Pressed, this, &AXPawn::RotationRight);
 	PlayerInputComponent->BindAction("RotationLeft", IE_Pressed, this, &AXPawn::RotationLeft);
+	PlayerInputComponent->BindAction("CheckGrid", IE_Pressed, this, &AXPawn::ChooseGrid);
+	PlayerInputComponent->BindAction("UnCheckGrid", IE_Pressed, this, &AXPawn::RemoveGrid);
 
 }
 
@@ -88,5 +97,35 @@ void AXPawn::RotationLeft()
 {
 	FRotator temp = UKismetMathLibrary::MakeRotator(0.0f, 0.0f, RotationSpeed);
 	Rotation_Desired += temp;
+}
+
+void AXPawn::ChooseGrid()
+{
+	if (!GridIns) return;
+	UE_LOG(LogTemp, Warning, TEXT("Left"));
+	GridIns->AddStateToTile(HoveredTile, ETileState::ETT_Selected);
+}
+
+void AXPawn::RemoveGrid()
+{
+	if (!GridIns) return;
+	UE_LOG(LogTemp, Warning, TEXT("Right"));
+	GridIns->RemoveStateFromTile(HoveredTile, ETileState::ETT_Selected);
+}
+
+void AXPawn::UpdateHoveredTile()
+{
+	if (!GridIns)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No GridIns!!!!!!!"));
+		return;
+	}
+	FIntPoint index = GridIns->GetTileIndexUnderCursor(0);
+	if (index != HoveredTile)
+	{
+		GridIns->RemoveStateFromTile(HoveredTile, ETileState::ETT_Hovered);
+		HoveredTile = index;
+		GridIns->AddStateToTile(HoveredTile, ETileState::ETT_Hovered);
+	}
 }
 

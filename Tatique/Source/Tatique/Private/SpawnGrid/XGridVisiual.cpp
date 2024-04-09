@@ -66,19 +66,19 @@ void AXGridVisiual::DestroyGridVisual()
 	XGridMeshInst->ClearInstance();
 }
 
-void AXGridVisiual::UpdateTileVisual(FTileDataStruct Data)
+void AXGridVisiual::UpdateTileVisual(FTileDataStruct* Data)
 {
 	if (!XGridMeshInst) return;
-	XGridMeshInst->RemoveInstance(Data.Index);
-	if (!IsTileTypeWalkAble(Data.Type)) return;
-	XGridMeshInst->AddInstance(Data.Index, Data.Transform);
+	XGridMeshInst->RemoveInstance(Data->Index);
+	if (!IsTileTypeWalkAble(Data->Type)) return;
+	XGridMeshInst->AddInstance(Data->Index, Data->Transform, Data->States);
 }
 
 bool AXGridVisiual::IsTileTypeWalkAble(const ETileType& type)
 {
 	if (type == ETileType::ETT_Normal)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ETileType::ETT_Normal"));
+		//UE_LOG(LogTemp, Warning, TEXT("ETileType::ETT_Normal"));
 		return true;
 	}
 	else

@@ -52,9 +52,9 @@ void AXGrid::OnConstruction(const FTransform& Transform)
 
 }
 
-void AXGrid::AddGridTile(FTileDataStruct TileData)
+void AXGrid::AddGridTile(FTileDataStruct* TileData)
 {
-	GridTiles.Add(TileData.Index, TileData);
+	GridTiles.Add(TileData->Index, *TileData);
 	if (!XGridVisual) return;
 	XGridVisual->UpdateTileVisual(TileData);
 }
@@ -235,14 +235,14 @@ void AXGrid::SetTileGrid(int x, int y, const FGridShapeStruct* curGrid, bool bUs
 	if (!bUseEnv)
 	{
 		FTileDataStruct data{ index,ETileType::ETT_Normal ,TileTransform };
-		AddGridTile(data);
+		AddGridTile(&data);
 	}
 	else
 	{
 		FTransform curTileTransform;
 		ETileType type = TraceForGround(TileTransform, curTileTransform);
 		FTileDataStruct data{ index,type,curTileTransform };
-		AddGridTile(data);
+		AddGridTile(&data);
 		
 	}
 	
@@ -284,7 +284,7 @@ ETileType AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLoca
 	{
 		ETileType RetType = ETileType::ETT_Normal;
 		FVector res;
-		for (auto hit : HitResults)
+		for (auto& hit : HitResults)
 		{
 			AXGridModifier* XGMActor = Cast<AXGridModifier>(hit.Actor);
 			if (XGMActor == nullptr)
@@ -404,6 +404,28 @@ FIntPoint AXGrid::GetTileIndexUnderCursor(int playerindex)
 {
 	FVector loc = GetCursorLocationOnGrid(playerindex);
 	return GetTileIndexFromWorldLocation(loc);
+}
+
+void AXGrid::AddStateToTile(const FIntPoint& index, const ETileState& state)
+{
+	if (!GridTiles.Find(index)) return;
+	FTileDataStruct* data = GridTiles.Find(index);
+	if (!data) return;
+	if ((data->States.AddUnique(state)) < 0) return;
+	GridTiles.Add(data->Index, *data);
+	if (!XGridVisual) return;
+	XGridVisual->UpdateTileVisual(data);
+}
+
+void AXGrid::RemoveStateFromTile(const FIntPoint& index, const ETileState& state)
+{
+	if (!GridTiles.Find(index)) return;
+	FTileDataStruct* data = GridTiles.Find(index);
+	if (!data) return;
+	if (!(data->States.Remove(state))) return;
+	GridTiles.Add(data->Index, *data);
+	if (!XGridVisual) return;
+	XGridVisual->UpdateTileVisual(data);
 }
 
 

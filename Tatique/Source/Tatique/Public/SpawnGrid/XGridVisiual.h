@@ -38,7 +38,7 @@ public:
 	void InitializeGridVisual(AXGrid* XGrid);
 	void SetOffsetfromGround(float ofs);
 	void DestroyGridVisual();
-	void UpdateTileVisual(FTileDataStruct Data);
+	void UpdateTileVisual(FTileDataStruct* Data);
 	bool IsTileTypeWalkAble(const ETileType& type);
 
 };

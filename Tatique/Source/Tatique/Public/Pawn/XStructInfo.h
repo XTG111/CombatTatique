@@ -23,8 +23,8 @@ struct FGridShapeStruct : public FTableRowBase
 		UStaticMesh* FlatMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		UMaterialInterface* FlatBorderMaterial;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-		UMaterialInterface* FlayFilledMaterial;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	//	UMaterialInterface* FlayFilledMaterial;
 };
 
 USTRUCT(BlueprintType)
@@ -41,6 +41,8 @@ struct FTileDataStruct : public FTableRowBase
 		ETileType Type;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		FTransform Transform;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		TArray<ETileState> States;
 };
 
 UCLASS()

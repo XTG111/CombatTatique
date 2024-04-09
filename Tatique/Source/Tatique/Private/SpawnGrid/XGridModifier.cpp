@@ -40,6 +40,7 @@ void AXGridModifier::OnConstruction(const FTransform& Transform)
 		return;
 	}
 	StaticMesh->SetStaticMesh(GetShape(GridShapeIns)->Mesh);
+	StaticMesh->SetMaterial(0, GetShape(GridShapeIns)->FlatBorderMaterial);
 	FLinearColor transtemp;
 	switch (TileTypeIns)
 	{
@@ -57,6 +58,7 @@ void AXGridModifier::OnConstruction(const FTransform& Transform)
 	}
 	FVector ParamValue = { transtemp.R,transtemp.G,transtemp.B };
 	StaticMesh->SetVectorParameterValueOnMaterials("Color", ParamValue);
+	StaticMesh->SetScalarParameterValueOnMaterials("IsFilled", 1.0f);
 	StaticMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECollisionResponse::ECR_Overlap);
 	SetActorHiddenInGame(true);
 }

@@ -52,6 +52,11 @@ public:
 	//旋转
 	void RotationRight();
 	void RotationLeft();
+	//选择方块
+	void ChooseGrid();
+	void RemoveGrid();
+	FIntPoint HoveredTile;
+	void UpdateHoveredTile();
 
 //变量
 public:
@@ -71,4 +76,7 @@ public:
 		float ZoomMin = 100.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ZoomMax = 1500.0f;
+
+	UPROPERTY(VisibleAnywhere)
+		class AXGrid* GridIns;
 };
