@@ -89,6 +89,12 @@ public:
 		UTextBlock* TextBlock_Enviorment;
 	UPROPERTY(meta = (BindWidget))
 		UComboBoxString* ComboBoxString_LevelMap;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_Actions;
+	UPROPERTY(meta = (BindWidget))
+		class UXButtonAction* W_XButtonActions;
+
 	UFUNCTION()
 		void LoadLevel(FString SelectedItem, ESelectInfo::Type SelectionType);
 

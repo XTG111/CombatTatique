@@ -5,8 +5,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "SpawnGrid/XGrid.h"
+#include "Pawn/XSelectorContorlActor.h"
 #include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AXPawn::AXPawn()
@@ -32,7 +33,7 @@ void AXPawn::BeginPlay()
 	Zoom_Desired = SpringArmComp->TargetArmLength;
 	Rotation_Desired = GetActorRotation();
 
-	GridIns = Cast<AXGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AXGrid::StaticClass()));
+	SelectorContorlActorIns = Cast<AXSelectorContorlActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AXSelectorContorlActor::StaticClass()));
 	//EnableInput(UGameplayStatics::GetPlayerController(GetWorld(),0));
 }
 
@@ -48,8 +49,6 @@ void AXPawn::Tick(float DeltaTime)
 
 	FRotator TargetRot = UKismetMathLibrary::RInterpTo(GetActorRotation(), Rotation_Desired, DeltaTime, RotationInterp);
 	SetActorRotation(TargetRot);
-
-	UpdateHoveredTile();
 
 }
 
@@ -101,31 +100,13 @@ void AXPawn::RotationLeft()
 
 void AXPawn::ChooseGrid()
 {
-	if (!GridIns) return;
-	UE_LOG(LogTemp, Warning, TEXT("Left"));
-	GridIns->AddStateToTile(HoveredTile, ETileState::ETT_Selected);
+	SelectorContorlActorIns->ChooseGrid();
 }
 
 void AXPawn::RemoveGrid()
 {
-	if (!GridIns) return;
-	UE_LOG(LogTemp, Warning, TEXT("Right"));
-	GridIns->RemoveStateFromTile(HoveredTile, ETileState::ETT_Selected);
+	SelectorContorlActorIns->RemoveGrid();
 }
 
-void AXPawn::UpdateHoveredTile()
-{
-	if (!GridIns)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No GridIns!!!!!!!"));
-		return;
-	}
-	FIntPoint index = GridIns->GetTileIndexUnderCursor(0);
-	if (index != HoveredTile)
-	{
-		GridIns->RemoveStateFromTile(HoveredTile, ETileState::ETT_Hovered);
-		HoveredTile = index;
-		GridIns->AddStateToTile(HoveredTile, ETileState::ETT_Hovered);
-	}
-}
+
 

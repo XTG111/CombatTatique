@@ -6,7 +6,6 @@
 #include "GameFramework/Pawn.h"
 #include "XPawn.generated.h"
 
-
 UCLASS()
 class TATIQUE_API AXPawn : public APawn
 {
@@ -55,8 +54,6 @@ public:
 	//选择方块
 	void ChooseGrid();
 	void RemoveGrid();
-	FIntPoint HoveredTile;
-	void UpdateHoveredTile();
 
 //变量
 public:
@@ -79,4 +76,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class AXGrid* GridIns;
+	UPROPERTY(VisibleAnywhere)
+		class AXSelectorContorlActor* SelectorContorlActorIns;
 };
