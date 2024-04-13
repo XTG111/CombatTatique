@@ -5,6 +5,11 @@
 #include "Components/SpinBox.h"
 #include "Components/TextBlock.h"
 
+void UXSpinwithGrid2Param::NativePreConstruct()
+{
+	GetWorld()->GetTimerManager().SetTimer(DelayTime, this, &UXSpinwithGrid2Param::SetSpinBox, 0.1f, true);
+}
+
 void UXSpinwithGrid2Param::NativeConstruct()
 {
 	bool check = TextBlock_Name && SpinBox_Value_X && SpinBox_Value_Y;
@@ -20,6 +25,7 @@ void UXSpinwithGrid2Param::SetSpinBox()
 {
 	if (TextBlock_Name == nullptr || SpinBox_Value_X == nullptr || SpinBox_Value_Y == nullptr) return;
 	TextBlock_Name->SetText(Name);
+	UE_LOG(LogTemp, Warning, TEXT("Value: %f, %f"), Value.X, Value.Y);
 	SpinBox_Value_X->SetValue(Value.X);
 	SpinBox_Value_Y->SetValue(Value.Y);
 	for (auto spinbox : SpinBoxList)
@@ -33,6 +39,7 @@ void UXSpinwithGrid2Param::SetSpinBox()
 		spinbox->SetAlwaysUsesDeltaSnap(AlwaysDeltaSnap);
 		spinbox->SetDelta(Delta);
 	}
+	GetWorld()->GetTimerManager().ClearTimer(DelayTime);
 }
 
 void UXSpinwithGrid2Param::SelfOnValueChange(float chvalue)

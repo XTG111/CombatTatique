@@ -5,6 +5,12 @@
 #include "Components/SpinBox.h"
 #include "Components/TextBlock.h"
 
+
+void UXSpinwithGrid3Param::NativePreConstruct()
+{
+	GetWorld()->GetTimerManager().SetTimer(DelayTime, this, &UXSpinwithGrid3Param::SetSpinBox, 0.1f, true);
+}
+
 void UXSpinwithGrid3Param::NativeConstruct()
 {
 	bool check = TextBlock_Name && SpinBox_Value_X && SpinBox_Value_Y && SpinBox_Value_Z;
@@ -38,6 +44,7 @@ void UXSpinwithGrid3Param::SetSpinBox()
 		spinbox->SetDelta(Delta);
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("No GridIns!!!!!!!"));
+	GetWorld()->GetTimerManager().ClearTimer(DelayTime);
 }
 
 void UXSpinwithGrid3Param::SelfOnValueChange(float chvalue)

@@ -4,38 +4,30 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "XButtonAction.generated.h"
+#include "XSetTileTypeWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TATIQUE_API UXButtonAction : public UUserWidget
+class TATIQUE_API UXSetTileTypeWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
-	UFUNCTION()
-		void SetActions();
 
 public:
 	UPROPERTY(meta = (BindWidget))
-		class UButton* Button_Actions;
-	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* TextBlock_Actions;
+		class UXButtonAction* W_SetTileTypeWidget;
 	UPROPERTY(VisibleAnywhere)
 		class AXSelectorContorlActor* PlayerActions;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<AXPlayerActions> LeftAction;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<AXPlayerActions> RightAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FText nameintro;
-
+	UPROPERTY(meta = (BindWidget))
+		class  UComboBoxString* ComboBoxString_SetTileType;
 public:
 	UFUNCTION()
 		void OnSelectedActionsChanged(class AXPlayerActions* leftclickaction, AXPlayerActions* rightclickaction);
+	UFUNCTION()
+		void SelecChange(FString SelectedItem, ESelectInfo::Type type);
+
 };

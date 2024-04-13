@@ -44,4 +44,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class AXGrid* GridIns;
+
+	void OnHoveredTileChange();
+	bool IsLeftClickDown = false;
+	bool IsRightClickDown = false;
 };

@@ -14,7 +14,7 @@ class TATIQUE_API UXTabGridControl : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	//virtual void NativePreConstruct() override;
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
@@ -94,6 +94,12 @@ public:
 		UTextBlock* TextBlock_Actions;
 	UPROPERTY(meta = (BindWidget))
 		class UXButtonAction* W_XButtonActions;
+	UPROPERTY(meta = (BindWidget))
+		UXButtonAction* W_XButtonAddRemove;
+	UPROPERTY(meta = (BindWidget))
+		class UXIncreaseDecreaseTileHightWidget* Button_Action_IncreaseDecreaseTile;
+	UPROPERTY(meta = (BindWidget))
+		class UXSetTileTypeWidget* Button_Action_SetTileType;
 
 	UFUNCTION()
 		void LoadLevel(FString SelectedItem, ESelectInfo::Type SelectionType);

@@ -59,6 +59,33 @@ void AXGrid::AddGridTile(FTileDataStruct* TileData)
 	XGridVisual->UpdateTileVisual(TileData);
 }
 
+FVector AXGrid::GetTileScale()
+{
+	FGridShapeStruct* curGrid = GetCurrentGridShape(GridShape);
+	FVector MeshSize = curGrid->MeshSize;
+	return (TileSize / MeshSize);
+}
+
+bool AXGrid::IsIndexValid(FIntPoint index)
+{
+	return GridTiles.Contains(index);
+}
+
+void AXGrid::RemoveGridTile(FIntPoint index)
+{
+	if (XGridVisual && GridTiles.Remove(index))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Remove Index!!!!!!!"));
+		FTransform TileTransform;
+		TileTransform.SetLocation(FVector{0.0f,0.0f,0.0f});
+		TileTransform.SetRotation(FQuat::MakeFromEuler(FVector{0.0f,0.0f,0.0f}));
+		TileTransform.SetScale3D(FVector{1.0f,1.0f,1.0f});
+		FTileDataStruct data{ index,ETileType::ETT_None ,TileTransform };
+
+		XGridVisual->UpdateTileVisual(&data);
+	}
+}
+
 void AXGrid::DestroyGrid()
 {
 	if (!XGridVisual) return;
@@ -261,7 +288,6 @@ ETileType AXGrid::TraceForGround(const FTransform& Location, FTransform& OutLoca
 	FVector Start = Location.GetLocation() + temp;
 	FVector End = Location.GetLocation() - temp;
 
-	FName TraceChannelName = "Ground";
 	UKismetSystemLibrary::SphereTraceMulti(
 		GetWorld(),
 		Start,
@@ -319,6 +345,11 @@ FVector AXGrid::GetCursorLocationOnGrid(int playerindex)
 	}
 	else
 	{
+		
+		if (PlayerController->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1), false, HitResults))
+		{
+			return HitResults.ImpactPoint;
+		}
 		FVector WorldLocation;
 		FVector WorldDirction;
 		//获取鼠标在屏幕空间的世界坐标

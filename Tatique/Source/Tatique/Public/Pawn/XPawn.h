@@ -53,7 +53,9 @@ public:
 	void RotationLeft();
 	//选择方块
 	void ChooseGrid();
+	void ReleasedLeft();
 	void RemoveGrid();
+	void ReleasedRight();
 
 //变量
 public:

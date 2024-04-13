@@ -15,6 +15,7 @@ class TATIQUE_API UXSpinwithGrid2Param : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 public:
 	UPROPERTY(meta = (BindWidget))
@@ -48,6 +49,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		FMyOnValueChange2 MyOnValueChange;
+
+	FTimerHandle DelayTime;
 
 	TArray<USpinBox*> SpinBoxList;
 	

@@ -5,11 +5,18 @@
 #include "Pawn/XSelectorContorlActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pawn/XPlayerActions.h"
 
+void UXButtonAction::NativePreConstruct()
+{
+	TextBlock_Actions->SetText(nameintro);
+}
+
 void UXButtonAction::NativeConstruct()
 {
+	
 	PlayerActions = Cast<AXSelectorContorlActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AXSelectorContorlActor::StaticClass()));
 	if (PlayerActions)
 	{

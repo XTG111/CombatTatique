@@ -63,7 +63,9 @@ void AXPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("RotationRight", IE_Pressed, this, &AXPawn::RotationRight);
 	PlayerInputComponent->BindAction("RotationLeft", IE_Pressed, this, &AXPawn::RotationLeft);
 	PlayerInputComponent->BindAction("CheckGrid", IE_Pressed, this, &AXPawn::ChooseGrid);
+	PlayerInputComponent->BindAction("CheckGrid", IE_Released, this, &AXPawn::ReleasedLeft);
 	PlayerInputComponent->BindAction("UnCheckGrid", IE_Pressed, this, &AXPawn::RemoveGrid);
+	PlayerInputComponent->BindAction("UnCheckGrid", IE_Released, this, &AXPawn::ReleasedRight);
 
 }
 
@@ -103,9 +105,19 @@ void AXPawn::ChooseGrid()
 	SelectorContorlActorIns->ChooseGrid();
 }
 
+void AXPawn::ReleasedLeft()
+{
+	SelectorContorlActorIns->IsLeftClickDown = false;
+}
+
 void AXPawn::RemoveGrid()
 {
 	SelectorContorlActorIns->RemoveGrid();
+}
+
+void AXPawn::ReleasedRight()
+{
+	SelectorContorlActorIns->IsRightClickDown = false;
 }
 
 

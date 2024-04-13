@@ -18,6 +18,11 @@
 
 #include "DrawDebugHelpers.h"
 
+void UXTabGridControl::NativePreConstruct()
+{
+	SetDefaultValue();
+}
+
 void UXTabGridControl::NativeConstruct()
 {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AXGrid::StaticClass(), GridInsList);
@@ -35,7 +40,7 @@ void UXTabGridControl::NativeConstruct()
 		return;
 	}
 	
-	SetDefaultValue();
+	//SetDefaultValue();
 	SpawnGrid();
 	GetWorld()->GetTimerManager().SetTimer(DebugDelayTime, this, &UXTabGridControl::DrawDebugLines, 0.5f, true);
 	BindFunction();
@@ -47,29 +52,29 @@ void UXTabGridControl::BindFunction()
 	
 	ComboBoxString_LevelMap->OnSelectionChanged.AddDynamic(this, &UXTabGridControl::LoadLevel);
 
-	W_GridControl_Location->Value = GridIns->CenterLocation;
-	W_GridControl_Location->SetSpinBox();
+	/*W_GridControl_Location->Value = GridIns->CenterLocation;
+	W_GridControl_Location->SetSpinBox();*/
 	W_GridControl_Location->MyOnValueChange.AddDynamic(this, &UXTabGridControl::OnValueChange3);
 
-	W_GridControl_TileSize->Value = GridIns->TileSize;
-	W_GridControl_TileSize->SetSpinBox();
+	/*W_GridControl_TileSize->Value = GridIns->TileSize;
+	W_GridControl_TileSize->SetSpinBox();*/
 	W_GridControl_TileSize->MyOnValueChange.AddDynamic(this, &UXTabGridControl::OnValueChange3);
 
 
-	W_GridControl_TileCount->Value = GridIns->TileCount;
-	W_GridControl_TileCount->SetSpinBox();
+	/*W_GridControl_TileCount->Value = GridIns->TileCount;
+	W_GridControl_TileCount->SetSpinBox();*/
 	W_GridControl_TileCount->MyOnValueChange.AddDynamic(this, &UXTabGridControl::OnValueChange2);
 
 	CheckBox_UseEnv->OnCheckStateChanged.AddDynamic(this, &UXTabGridControl::CheckChanged);
 	
-	W_SpinBox_Offset->Value = GridIns->Offset;
-	W_SpinBox_Offset->SetSpinBox();
+	/*W_SpinBox_Offset->Value = GridIns->Offset;
+	W_SpinBox_Offset->SetSpinBox();*/
 	W_SpinBox_Offset->SpinBox_Value->OnValueChanged.AddDynamic(this, &UXTabGridControl::SetGridOffset);
 
 	if(W_SpinBox_ReGenDelay)
 	{
-		W_SpinBox_ReGenDelay->Value = DTime;
-		W_SpinBox_ReGenDelay->SetSpinBox();
+		/*W_SpinBox_ReGenDelay->Value = DTime;
+		W_SpinBox_ReGenDelay->SetSpinBox();*/
 		W_SpinBox_ReGenDelay->SpinBox_Value->OnValueChanged.AddDynamic(this, &UXTabGridControl::SetDelatValue);
 	}
 }
@@ -162,12 +167,9 @@ void UXTabGridControl::SetDelatValue(float value)
 void UXTabGridControl::SetDefaultValue()
 {
 	if (!GridIns) return;
-	W_GridControl_Location->Value = GridIns->CenterLocation;
-	W_GridControl_Location->SetSpinBox();
-	W_GridControl_TileSize->Value = GridIns->TileSize;
-	W_GridControl_TileSize->SetSpinBox();
-	W_GridControl_TileCount->Value = GridIns->TileCount;
-	W_GridControl_TileCount->SetSpinBox();
+	W_GridControl_Location->Value = FVector{0.0f,0.0f,0.0f};
+	W_GridControl_TileSize->Value = FVector{ 100.0f,100.0f,50.0f };
+	W_GridControl_TileCount->Value = FIntPoint(10, 10);
 	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EGridShapEnum"), true);
 	if (!EnumPtr)
 	{

@@ -104,4 +104,12 @@ public:
 	void RemoveStateFromTile(const FIntPoint& index, const ETileState& state);
 
 	void AddGridTile(FTileDataStruct* TileData);
+
+	//获取当前的缩放
+	FVector GetTileScale();
+	//判断当前点对，是否是网格点对数组中
+	bool IsIndexValid(FIntPoint index);
+	//移除存在的格子
+	void RemoveGridTile(FIntPoint index);
+
 };

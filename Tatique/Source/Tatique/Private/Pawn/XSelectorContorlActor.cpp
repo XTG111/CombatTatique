@@ -37,6 +37,7 @@ void AXSelectorContorlActor::ChooseGrid()
 	UE_LOG(LogTemp, Warning, TEXT("Left"));
 	//GridIns->AddStateToTile(HoveredTile, ETileState::ETT_Selected);
 	UpdateHoveredTile();
+	IsLeftClickDown = true;
 	if (SelecetAction_LeftCheck)
 	{
 		SelecetAction_LeftCheck->ExecuteAction(HoveredTile);
@@ -49,6 +50,7 @@ void AXSelectorContorlActor::RemoveGrid()
 	UE_LOG(LogTemp, Warning, TEXT("Right"));
 	//GridIns->RemoveStateFromTile(HoveredTile, ETileState::ETT_Selected);
 	UpdateHoveredTile();
+	IsRightClickDown = true;
 	if (SelecetAction_RightCheck)
 	{
 		SelecetAction_RightCheck->ExecuteAction(HoveredTile);
@@ -69,6 +71,7 @@ void AXSelectorContorlActor::UpdateHoveredTile()
 		HoveredTile = index;
 		GridIns->AddStateToTile(HoveredTile, ETileState::ETT_Hovered);
 	}
+	OnHoveredTileChange();
 }
 
 void AXSelectorContorlActor::SetSelectedActions(TSubclassOf<class AXPlayerActions> LeftActionClass, TSubclassOf<AXPlayerActions> RightActionClass)
@@ -95,7 +98,7 @@ void AXSelectorContorlActor::setact(TSubclassOf<AXPlayerActions> LeftActionClass
 		trans.SetScale3D(scal);
 		FActorSpawnParameters SpawnParameters;
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SelecetAction_LeftCheck = GetWorld()->SpawnActor<AXChildPlayerActions>(LeftActionClass, trans, SpawnParameters);
+		SelecetAction_LeftCheck = GetWorld()->SpawnActor<AXPlayerActions>(LeftActionClass, trans, SpawnParameters);
 	}
 
 	if (SelecetAction_RightCheck)
@@ -114,7 +117,25 @@ void AXSelectorContorlActor::setact(TSubclassOf<AXPlayerActions> LeftActionClass
 		trans.SetScale3D(scal);
 		FActorSpawnParameters SpawnParameters;
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SelecetAction_RightCheck = GetWorld()->SpawnActor<AXChildPlayerActions>(RightActionClass, trans, SpawnParameters);
+		SelecetAction_RightCheck = GetWorld()->SpawnActor<AXPlayerActions>(RightActionClass, trans, SpawnParameters);
+	}
+}
+
+void AXSelectorContorlActor::OnHoveredTileChange()
+{
+	if (IsLeftClickDown)
+	{
+		if (SelecetAction_LeftCheck)
+		{
+			SelecetAction_LeftCheck->ExecuteAction(HoveredTile);
+		}
+	}
+	if (IsRightClickDown)
+	{
+		if (SelecetAction_RightCheck)
+		{
+			SelecetAction_RightCheck->ExecuteAction(HoveredTile);
+		}
 	}
 }
 
