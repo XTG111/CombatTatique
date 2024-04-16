@@ -79,7 +79,7 @@ float AXGridMeshInst::GetColorFromState(const TArray<ETileState>& states, FLinea
 		color = FColor::Black;
 		return 0.0f;
 	}
-	TArray<ETileState> temparray = {ETileState::ETT_Selected,ETileState::ETT_Hovered};
+	TArray<ETileState> temparray = {ETileState::ETT_Selected,ETileState::ETT_Hovered,ETileState::ETT_IsNeighbored};
 	for (auto& temp : temparray)
 	{
 		if (states.Contains(temp))
@@ -88,12 +88,16 @@ float AXGridMeshInst::GetColorFromState(const TArray<ETileState>& states, FLinea
 			if (temp == ETileState::ETT_Hovered)
 			{
 				color =  FColor::Yellow;
-				UE_LOG(LogTemp, Warning, TEXT("FColor::Yellow"));
+				//UE_LOG(LogTemp, Warning, TEXT("FColor::Yellow"));
 			}
 			else if(temp == ETileState::ETT_Selected)
 			{
 				color = FColor::Red;
-				UE_LOG(LogTemp, Warning, TEXT("FColor::Red"));
+				//UE_LOG(LogTemp, Warning, TEXT("FColor::Red"));
+			}
+			else if (temp == ETileState::ETT_IsNeighbored)
+			{
+				color = FColor::Cyan;
 			}
 			
 			return 1.0f;

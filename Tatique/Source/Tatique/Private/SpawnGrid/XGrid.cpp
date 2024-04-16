@@ -9,6 +9,7 @@
 #include "Components/ChildActorComponent.h"
 #include "SpawnGrid/XGridModifier.h"
 #include "SpawnGrid/XGridVisiual.h"
+#include "SpawnGrid/XGridPathFinding.h"
 
 
 // Sets default values
@@ -22,6 +23,9 @@ AXGrid::AXGrid()
 
 	ChildActor_GridVisual = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActor_GridVisual"));
 	ChildActor_GridVisual->SetupAttachment(RootComponent);
+
+	ChildActor_GridPathFinding = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActor_GridPathFinding"));
+	ChildActor_GridPathFinding->SetupAttachment(RootComponent);
 
 	//InstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("InstancedMeshComponent"));
 
@@ -47,6 +51,11 @@ void AXGrid::OnConstruction(const FTransform& Transform)
 {
 	if (!ChildActor_GridVisual) return;
 	XGridVisual = Cast<AXGridVisiual>(ChildActor_GridVisual->GetChildActor());
+	XGridPathFinding = Cast<AXGridPathFinding>(ChildActor_GridPathFinding->GetChildActor());
+	if (XGridPathFinding)
+	{
+		XGridPathFinding->GridIns = this;
+	}
 	if (!XGridVisual) return;
 	SpawnGrid(GetActorLocation(), TileSize, TileCount, GridShape, true);
 
@@ -86,6 +95,29 @@ void AXGrid::RemoveGridTile(FIntPoint index)
 		XGridVisual->UpdateTileVisual(&data);
 
 		OnTileDataUpdated.Broadcast(index);
+	}
+}
+
+TArray<FIntPoint> AXGrid::GetAllTilesWithState(const ETileState& type)
+{
+	TArray<FIntPoint> Res;
+	for (auto& it : GridTiles)
+	{
+		FTileDataStruct Data = it.Value;
+		if (Data.States.Contains(type))
+		{
+			Res.Add(Data.Index);
+		}
+	}
+	return Res;
+}
+
+void AXGrid::ClearStateFromTiles(const ETileState& type)
+{
+	TArray<FIntPoint> temp = GetAllTilesWithState(type);
+	for (auto& it : temp)
+	{
+		RemoveStateFromTile(it, type);
 	}
 }
 

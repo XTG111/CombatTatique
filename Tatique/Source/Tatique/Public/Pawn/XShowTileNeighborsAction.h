@@ -13,5 +13,10 @@ UCLASS()
 class TATIQUE_API AXShowTileNeighborsAction : public AXPlayerActions
 {
 	GENERATED_BODY()
+public:
+	virtual void ExecuteAction(FIntPoint index) override;
+
+	//控制是否包含对角线
+	bool bIncludeDiagonals;
 	
 };

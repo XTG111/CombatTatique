@@ -48,8 +48,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UChildActorComponent* ChildActor_GridVisual;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UChildActorComponent* ChildActor_GridPathFinding;
 	UPROPERTY(VisibleAnywhere)
 		class AXGridVisiual* XGridVisual;
+	UPROPERTY(VisibleAnywhere)
+		class AXGridPathFinding* XGridPathFinding;
 
 	//Grid生成中心
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -114,6 +118,10 @@ public:
 	bool IsIndexValid(FIntPoint index);
 	//移除存在的格子
 	void RemoveGridTile(FIntPoint index);
+
+	//用于控制寻找格子的周围格子
+	TArray<FIntPoint> GetAllTilesWithState(const ETileState& type);
+	void ClearStateFromTiles(const ETileState& type);
 
 //委托
 public:
