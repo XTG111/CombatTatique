@@ -15,8 +15,11 @@ void UXDebugMenuWidget::NativeConstruct()
 	Button_Tab1->SetBackgroundColor(FLinearColor::Black);
 	Button_Tab2->SetBackgroundColor(FLinearColor::Black);
 	Button_Tab3->SetBackgroundColor(FLinearColor::Black);
+	Button_Tab4->SetBackgroundColor(FLinearColor::Black);
 	TextBlock_Tab1->SetText(FText::FromString("Command"));
 	TextBlock_Tab2->SetText(FText::FromString("Camera"));
+	TextBlock_Tab3->SetText(FText::FromString("Grid"));
+	TextBlock_Tab4->SetText(FText::FromString("PathFinding"));
 	//UE_LOG(LogTemp, Warning, TEXT("The XDebugMenuWidget"));
 
 	if (Button_Tab1)
@@ -31,11 +34,15 @@ void UXDebugMenuWidget::NativeConstruct()
 	{
 		Button_Tab3->OnClicked.AddDynamic(this, &UXDebugMenuWidget::SetChoose3);
 	}
+	if (Button_Tab4)
+	{
+		Button_Tab4->OnClicked.AddDynamic(this, &UXDebugMenuWidget::SetChoose4);
+	}
 }
 
 void UXDebugMenuWidget::SetChoose1()
 {
-	bool check = Button_Tab1!=nullptr && Button_Tab2!=nullptr && Button_Tab3!=nullptr && WidgetSwitcher_TabContent!=nullptr;
+	bool check = Button_Tab1!=nullptr && Button_Tab2!=nullptr && Button_Tab3!=nullptr && Button_Tab4 != nullptr && WidgetSwitcher_TabContent!=nullptr;
 	if (!check) return;
 	int ActiveWidgetIndex = WidgetSwitcher_TabContent->ActiveWidgetIndex;
 	
@@ -54,11 +61,12 @@ void UXDebugMenuWidget::SetChoose1()
 	Button_Tab1->SetBackgroundColor(BackgroudColor);
 	Button_Tab2->SetBackgroundColor(BackgroundColorOther);
 	Button_Tab3->SetBackgroundColor(BackgroundColorOther);
+	Button_Tab4->SetBackgroundColor(BackgroundColorOther);
 }
 
 void UXDebugMenuWidget::SetChoose2()
 {
-	bool check = Button_Tab1 != nullptr && Button_Tab2 != nullptr && Button_Tab3 != nullptr && WidgetSwitcher_TabContent != nullptr;
+	bool check = Button_Tab1 != nullptr && Button_Tab2 != nullptr && Button_Tab3 != nullptr && Button_Tab4 != nullptr && WidgetSwitcher_TabContent != nullptr;
 	if (!check) return;
 	int ActiveWidgetIndex = WidgetSwitcher_TabContent->ActiveWidgetIndex;
 
@@ -77,11 +85,12 @@ void UXDebugMenuWidget::SetChoose2()
 	Button_Tab2->SetBackgroundColor(BackgroudColor);
 	Button_Tab1->SetBackgroundColor(BackgroundColorOther);
 	Button_Tab3->SetBackgroundColor(BackgroundColorOther);
+	Button_Tab4->SetBackgroundColor(BackgroundColorOther);
 }
 
 void UXDebugMenuWidget::SetChoose3()
 {
-	bool check = Button_Tab1 != nullptr && Button_Tab2 != nullptr && Button_Tab3 != nullptr && WidgetSwitcher_TabContent != nullptr;
+	bool check = Button_Tab1 != nullptr && Button_Tab2 != nullptr && Button_Tab3 != nullptr && Button_Tab4 != nullptr && WidgetSwitcher_TabContent != nullptr;
 	if (!check) return;
 	int ActiveWidgetIndex = WidgetSwitcher_TabContent->ActiveWidgetIndex;
 
@@ -100,4 +109,29 @@ void UXDebugMenuWidget::SetChoose3()
 	Button_Tab3->SetBackgroundColor(BackgroudColor);
 	Button_Tab1->SetBackgroundColor(BackgroundColorOther);
 	Button_Tab2->SetBackgroundColor(BackgroundColorOther);
+	Button_Tab4->SetBackgroundColor(BackgroundColorOther);
+}
+
+void UXDebugMenuWidget::SetChoose4()
+{
+	bool check = Button_Tab1 != nullptr && Button_Tab2 != nullptr && Button_Tab3 != nullptr && Button_Tab4 != nullptr && WidgetSwitcher_TabContent != nullptr;
+	if (!check) return;
+	int ActiveWidgetIndex = WidgetSwitcher_TabContent->ActiveWidgetIndex;
+
+	if (ActiveWidgetIndex == 4)
+	{
+		WidgetSwitcher_TabContent->SetActiveWidgetIndex(0);
+	}
+	else
+	{
+		WidgetSwitcher_TabContent->SetActiveWidgetIndex(4);
+	}
+
+	bool PickA = (ActiveWidgetIndex == 4);
+	BackgroudColor = UKismetMathLibrary::SelectColor(FLinearColor::Black, FLinearColor::Blue, PickA);
+	BackgroundColorOther = FLinearColor::Black;
+	Button_Tab4->SetBackgroundColor(BackgroudColor);
+	Button_Tab1->SetBackgroundColor(BackgroundColorOther);
+	Button_Tab2->SetBackgroundColor(BackgroundColorOther);
+	Button_Tab3->SetBackgroundColor(BackgroundColorOther);
 }

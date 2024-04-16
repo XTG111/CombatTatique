@@ -8,6 +8,9 @@
 #include "D:/UnrealProject/CombatTatique_W/CombatTatique/Tatique/Source/Tatique/XHeadFile/GridShapeEnum.h"
 #include "XGrid.generated.h"
 
+//两个委托，当Grid发生变化时，与显示Text通知更改
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTileDataUpdated, FIntPoint, param1);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGridDestroyed);
 UCLASS()
 class TATIQUE_API AXGrid : public AActor
 {
@@ -111,5 +114,12 @@ public:
 	bool IsIndexValid(FIntPoint index);
 	//移除存在的格子
 	void RemoveGridTile(FIntPoint index);
+
+//委托
+public:
+	UPROPERTY(VisibleAnywhere)
+		FOnTileDataUpdated OnTileDataUpdated;
+	UPROPERTY(VisibleAnywhere)
+		FOnGridDestroyed OnGridDestroyed;
 
 };

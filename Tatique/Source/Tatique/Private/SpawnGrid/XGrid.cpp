@@ -57,6 +57,7 @@ void AXGrid::AddGridTile(FTileDataStruct* TileData)
 	GridTiles.Add(TileData->Index, *TileData);
 	if (!XGridVisual) return;
 	XGridVisual->UpdateTileVisual(TileData);
+	OnTileDataUpdated.Broadcast(TileData->Index);
 }
 
 FVector AXGrid::GetTileScale()
@@ -83,6 +84,8 @@ void AXGrid::RemoveGridTile(FIntPoint index)
 		FTileDataStruct data{ index,ETileType::ETT_None ,TileTransform };
 
 		XGridVisual->UpdateTileVisual(&data);
+
+		OnTileDataUpdated.Broadcast(index);
 	}
 }
 
@@ -91,6 +94,7 @@ void AXGrid::DestroyGrid()
 	if (!XGridVisual) return;
 	GridTiles.Empty();
 	XGridVisual->DestroyGridVisual();
+	OnGridDestroyed.Broadcast();
 }
 
 void AXGrid::SpawnGrid(const FVector& pCenterLocation, const FVector& pTileSize, const FIntPoint& pTileCount, const EGridShapEnum& pGridShape, bool bUseEnv)
@@ -446,6 +450,7 @@ void AXGrid::AddStateToTile(const FIntPoint& index, const ETileState& state)
 	GridTiles.Add(data->Index, *data);
 	if (!XGridVisual) return;
 	XGridVisual->UpdateTileVisual(data);
+	OnTileDataUpdated.Broadcast(index);
 }
 
 void AXGrid::RemoveStateFromTile(const FIntPoint& index, const ETileState& state)
@@ -457,6 +462,7 @@ void AXGrid::RemoveStateFromTile(const FIntPoint& index, const ETileState& state
 	GridTiles.Add(data->Index, *data);
 	if (!XGridVisual) return;
 	XGridVisual->UpdateTileVisual(data);
+	OnTileDataUpdated.Broadcast(index);
 }
 
 

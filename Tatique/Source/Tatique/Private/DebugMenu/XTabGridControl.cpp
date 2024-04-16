@@ -125,37 +125,16 @@ void UXTabGridControl::LoadLevel(FString SelectedItem, ESelectInfo::Type Selecti
 
 void UXTabGridControl::OnValueChange2(FVector2D value)
 {
-	//if (!FPlatformAtomics::InterlockedCompareExchange(&bHasExecuted, 1, 0))
-	//{
-	//	float Time = W_SpinBox_ReGenDelay->Value;
-	//	GetWorld()->GetTimerManager().SetTimer(DelayTimer, this, &UXTabGridControl::SpawnGrid, Time);
-	//	if (bHasExecuted) bHasExecuted = 0;
-	//	else bHasExecuted = 1;
-	//}
 	SpawnGrid();
 }
 
 void UXTabGridControl::OnValueChange3(FVector value)
 {
-	//if (!FPlatformAtomics::InterlockedCompareExchange(&bHasExecuted, 1, 0))
-	//{
-	//	float Time = W_SpinBox_ReGenDelay->Value;
-	//	GetWorld()->GetTimerManager().SetTimer(DelayTimer, this, &UXTabGridControl::SpawnGrid, Time);
-	//	if (bHasExecuted) bHasExecuted = 0;
-	//	else bHasExecuted = 1;
-	//}
 	SpawnGrid();
 }
 
 void UXTabGridControl::OnSelectionChange(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
-	//if (!FPlatformAtomics::InterlockedCompareExchange(&bHasExecuted, 1, 0))
-	//{
-	//	float Time = W_SpinBox_ReGenDelay->Value;
-	//	GetWorld()->GetTimerManager().SetTimer(DelayTimer, this, &UXTabGridControl::SpawnGrid, Time);
-	//	if (bHasExecuted) bHasExecuted = 0;
-	//	else bHasExecuted = 1;
-	//}
 	SpawnGrid();
 }
 

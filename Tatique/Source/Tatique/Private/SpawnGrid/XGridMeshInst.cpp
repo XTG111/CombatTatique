@@ -40,7 +40,7 @@ void AXGridMeshInst::AddInstance(const FIntPoint Index, const FTransform Transfo
 	int temp = InstanceIncdexes.Add(Index);
 	FLinearColor colorins;
 	float isFilled = GetColorFromState(states, colorins);
-	UE_LOG(LogTemp, Warning, TEXT("RGB: %f,%f,%f"),colorins.R,colorins.G,colorins.B);
+	//UE_LOG(LogTemp, Warning, TEXT("RGB: %f,%f,%f"),colorins.R,colorins.G,colorins.B);
 	InstancedMeshComponent->SetCustomDataValue(temp, 0, colorins.R, false);
 	InstancedMeshComponent->SetCustomDataValue(temp, 1, colorins.G, false);
 	InstancedMeshComponent->SetCustomDataValue(temp, 2, colorins.B, false);

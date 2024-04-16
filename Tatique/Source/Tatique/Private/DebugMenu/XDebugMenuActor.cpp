@@ -6,12 +6,19 @@
 #include "DebugMenu/XDebugMenuWidget.h"
 #include "DebugMenu/XCameraDebugWidget.h"
 #include "DebugMenu/XSpinwithNameWidget.h"
+#include "Components/ChildActorComponent.h"
 
 // Sets default values
 AXDebugMenuActor::AXDebugMenuActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("MyRootComponent"));
+	RootComponent = DefaultSceneRoot;
+
+	ChildActor_TextOnTile = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActor_TextOnTile"));
+	ChildActor_TextOnTile->SetupAttachment(RootComponent);
 
 }
 

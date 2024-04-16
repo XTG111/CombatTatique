@@ -23,6 +23,8 @@ public:
 		void SetChoose2();
 	UFUNCTION()
 		void SetChoose3();
+	UFUNCTION()
+		void SetChoose4();
 
 public:
 	UPROPERTY(meta = (BindWidget))
@@ -31,6 +33,8 @@ public:
 		UButton* Button_Tab2;
 	UPROPERTY(meta = (BindWidget))
 		UButton* Button_Tab3;
+	UPROPERTY(meta = (BindWidget))
+		UButton* Button_Tab4;
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TextBlock_Tab1;
@@ -38,6 +42,8 @@ public:
 		UTextBlock* TextBlock_Tab2;
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* TextBlock_Tab3;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* TextBlock_Tab4;
 
 	UPROPERTY(meta = (BindWidget))
 		class UWidgetSwitcher* WidgetSwitcher_TabContent;
@@ -49,6 +55,8 @@ public:
 		class UXCameraDebugWidget* W_TAB_CameraControl;
 	UPROPERTY(meta = (BindWidget))
 		class UXTabGridControl* W_TAB_GridControl;
+	UPROPERTY(meta = (BindWidget))
+		class UX_Tab_PathFinding* W_TAB_PathFinding;
 
 	FLinearColor BackgroudColor;
 	FLinearColor BackgroundColorOther;

@@ -31,7 +31,7 @@ void UXSpinwithGrid3Param::SetSpinBox()
 	SpinBox_Value_X->SetValue(Value.X);
 	SpinBox_Value_Y->SetValue(Value.Y);
 	SpinBox_Value_Z->SetValue(Value.Z);
-	UE_LOG(LogTemp, Warning, TEXT("TileSize,%f,%f,%f"), Value.X, Value.Y, Value.Z);
+	UE_LOG(LogTemp, Warning, TEXT("TileSize,%f,%f,%f"), SpinBox_Value_X->GetValue(), SpinBox_Value_Y->GetValue(), SpinBox_Value_Z->GetValue());
 	for (auto spinbox : SpinBoxList)
 	{
 		spinbox->SetMinSliderValue(SliderValue.X);

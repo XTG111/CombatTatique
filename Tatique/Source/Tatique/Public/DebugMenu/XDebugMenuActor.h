@@ -27,6 +27,10 @@ public:
 public:
 	UPROPERTY()
 		class UXDebugMenuWidget* XDebugMenu;
+	UPROPERTY(VisibleAnywhere, Category = MySceneComponent)
+		class USceneComponent* DefaultSceneRoot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UChildActorComponent* ChildActor_TextOnTile;
 
 	UPROPERTY(EditAnywhere, Category = "Debug")
 		TSubclassOf<class UUserWidget> DebugMenuWdgClass;
