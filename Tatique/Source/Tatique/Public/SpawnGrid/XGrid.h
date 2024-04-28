@@ -11,6 +11,7 @@
 //两个委托，当Grid发生变化时，与显示Text通知更改
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTileDataUpdated, FIntPoint, param1);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGridDestroyed);
+
 UCLASS()
 class TATIQUE_API AXGrid : public AActor
 {
@@ -122,6 +123,10 @@ public:
 	//用于控制寻找格子的周围格子
 	TArray<FIntPoint> GetAllTilesWithState(const ETileState& type);
 	void ClearStateFromTiles(const ETileState& type);
+
+	//判断网格点合理性
+	bool IsTileTypeWalkAble(const ETileType& type);
+	bool IsTileWalkable(const FIntPoint& index);
 
 //委托
 public:

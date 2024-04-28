@@ -10,6 +10,7 @@ AXGridMeshInst::AXGridMeshInst()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	InstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("InstancedMeshComponent"));
+	RootComponent = InstancedMeshComponent;
 	InstancedMeshComponent->SetCollisionObjectType(ECC_WorldStatic);
 	InstancedMeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	InstancedMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Block);
@@ -79,7 +80,7 @@ float AXGridMeshInst::GetColorFromState(const TArray<ETileState>& states, FLinea
 		color = FColor::Black;
 		return 0.0f;
 	}
-	TArray<ETileState> temparray = {ETileState::ETT_Selected,ETileState::ETT_Hovered,ETileState::ETT_IsNeighbored};
+	TArray<ETileState> temparray = {ETileState::ETT_Selected,ETileState::ETT_Hovered,ETileState::ETT_IsNeighbored,ETileState::ETT_IsInPath};
 	for (auto& temp : temparray)
 	{
 		if (states.Contains(temp))
@@ -98,6 +99,11 @@ float AXGridMeshInst::GetColorFromState(const TArray<ETileState>& states, FLinea
 			else if (temp == ETileState::ETT_IsNeighbored)
 			{
 				color = FColor::Cyan;
+			}
+			else if (temp == ETileState::ETT_IsInPath)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ColorBlue!!!!!!!!!!"));
+				color = FColor::Blue;
 			}
 			
 			return 1.0f;

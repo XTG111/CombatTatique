@@ -70,8 +70,8 @@ void AXSelectorContorlActor::UpdateHoveredTile()
 		GridIns->RemoveStateFromTile(HoveredTile, ETileState::ETT_Hovered);
 		HoveredTile = index;
 		GridIns->AddStateToTile(HoveredTile, ETileState::ETT_Hovered);
+		OnHoveredTileChange();
 	}
-	OnHoveredTileChange();
 }
 
 void AXSelectorContorlActor::SetSelectedActions(TSubclassOf<class AXPlayerActions> LeftActionClass, TSubclassOf<AXPlayerActions> RightActionClass)

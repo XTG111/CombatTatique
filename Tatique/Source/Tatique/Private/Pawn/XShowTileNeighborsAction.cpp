@@ -20,10 +20,10 @@ void AXShowTileNeighborsAction::ExecuteAction(FIntPoint index)
 		PlayerAction->GridIns->ClearStateFromTiles(ETileState::ETT_IsNeighbored);
 		if (PlayerAction->GridIns->ChildActor_GridPathFinding)
 		{
-			TArray<FIntPoint> nerighbors = PlayerAction->GridIns->XGridPathFinding->GetValidTileNeighbor(index, bIncludeDiagonals);
+			TArray<FPathFindingData> nerighbors = PlayerAction->GridIns->XGridPathFinding->GetValidTileNeighbor(index, bIncludeDiagonals);
 			for (auto& it : nerighbors)
 			{
-				PlayerAction->GridIns->AddStateToTile(it,ETileState::ETT_IsNeighbored);
+				PlayerAction->GridIns->AddStateToTile(it.Index,ETileState::ETT_IsNeighbored);
 			}
 		}
 	}

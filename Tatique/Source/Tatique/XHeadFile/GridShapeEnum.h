@@ -23,4 +23,6 @@ enum class ETileState :uint8
 	ETT_Hovered UMETA(DisplayName = "Hovered"),
 	ETT_Selected UMETA(DisplayName = "Selected"),
 	ETT_IsNeighbored UMETA(DisplayName = "IsNeighbored"),
+	ETT_IsInPath UMETA(DisplayName = "IsInPath"),
 };
+

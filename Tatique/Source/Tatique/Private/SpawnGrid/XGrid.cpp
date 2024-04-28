@@ -121,6 +121,23 @@ void AXGrid::ClearStateFromTiles(const ETileState& type)
 	}
 }
 
+bool AXGrid::IsTileTypeWalkAble(const ETileType& type)
+{
+	if (type == ETileType::ETT_Normal) return true;
+	else return false;
+}
+
+bool AXGrid::IsTileWalkable(const FIntPoint& index)
+{
+	if (GridTiles.Find(index))
+	{
+		ETileType type = GridTiles.Find(index)->Type;
+		if (IsTileTypeWalkAble(type)) return true;
+		else return false;
+	}
+	return false;
+}
+
 void AXGrid::DestroyGrid()
 {
 	if (!XGridVisual) return;

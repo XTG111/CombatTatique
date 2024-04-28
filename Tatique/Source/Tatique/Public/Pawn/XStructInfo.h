@@ -13,7 +13,7 @@ USTRUCT(BlueprintType)
 struct FGridShapeStruct : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		FVector MeshSize;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		class UStaticMesh* Mesh;
@@ -43,6 +43,26 @@ struct FTileDataStruct : public FTableRowBase
 		FTransform Transform;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		TArray<ETileState> States;
+};
+
+USTRUCT(BlueprintType)
+struct FPathFindingData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+	FPathFindingData() {}
+	FPathFindingData(FIntPoint index, int costtoentertile, int costfromstart, int minimumcosttotarget, FIntPoint previousindex) :
+		Index(index), CostToEnterTile(costtoentertile), CostFromStart(costfromstart),MinimumCostToTarget(minimumcosttotarget),PreviousIndex(previousindex)
+	{}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		FIntPoint Index = { -999, -999 };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		int CostToEnterTile = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		int CostFromStart = 999999;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		int MinimumCostToTarget = 99999;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		FIntPoint PreviousIndex = { -999, -999 };
 };
 
 UCLASS()

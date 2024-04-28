@@ -25,6 +25,8 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UXButtonShowTileNeighbor* W_Button_Action_ShowTileNeighbor;
 	UPROPERTY(meta = (BindWidget))
+		class UXButtonShowPathToTarget* W_Button_Action_ShowPathToTarget;
+	UPROPERTY(meta = (BindWidget))
 		class UCheckBox* CheckBox_ShowIndexesOnTiles;
 	
 };
