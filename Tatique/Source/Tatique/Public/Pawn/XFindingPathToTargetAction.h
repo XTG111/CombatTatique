@@ -16,7 +16,10 @@ class TATIQUE_API AXFindingPathToTargetAction : public AXPlayerActions
 public:
 	virtual void ExecuteAction(FIntPoint index) override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+	UFUNCTION()
+		void OnPathFindingCompleted(TArray<FIntPoint> Path);
 
 	//控制是否包含对角线
 	bool bIncludeDiagonals;
+	float Delay;
 };

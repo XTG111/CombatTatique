@@ -34,6 +34,8 @@ public:
 	bool bShowMinCostToTarget = false;
 	bool bShowCostFromStart = false;
 	bool bShowSortOrder = false;
+	bool bShowDiscoveredTiles = false;
+	bool bShowAnalysedTiles = false;
 
 public:
 	//生成获取当前格子对应的TextActor
@@ -47,13 +49,24 @@ public:
 	UFUNCTION()
 		void UpdateTextOnTile(FIntPoint index);
 	UFUNCTION()
-		void UpdateTextOnAllTiles();
+		void ReUpdateAllTextAfterDelay(FIntPoint index);
+	UFUNCTION()
+		void ReUpdateAllTextAndColorAfterDelay_NoInput();
+	void UpdateTextOnAllTiles();
+	void DelayFunc();
 	bool WantToDisplayAnyText();
-
 	//控制是否显示文字
-	void SetShowTileIndexes(bool bstl, bool bsctet,bool bsmctt,bool bcfs, bool bsso);
+	void SetShowTileIndexes(bool bstl, bool bsctet, bool bsmctt, bool bcfs, bool bsso);
+
+	//用于显示寻路过程中处于Discovered和Analysed数组中的方块
+	void UpdateStateOnTile(FIntPoint index);
+	void UpdateStateOnAllTile();
+	void SetShowTileStates(bool bsdt, bool bsat);
 
 	bool IsTileWalkAble(ETileType type);
+
+	FTimerHandle UpdateAllTextTimer;
+	FTimerHandle UpdateAllTextNoInputTimer;
 
 
 

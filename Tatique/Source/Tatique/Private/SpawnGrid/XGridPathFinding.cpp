@@ -4,6 +4,7 @@
 #include "SpawnGrid/XGridPathFinding.h"
 #include "SpawnGrid/XGrid.h"
 #include "D:/UnrealProject/CombatTatique_W/CombatTatique/Tatique/Source/Tatique/XHeadFile/GridShapeEnum.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AXGridPathFinding::AXGridPathFinding()
@@ -176,10 +177,11 @@ TArray<FIntPoint> AXGridPathFinding::GetNeighborIndexesforHexagon(FIntPoint inde
 	return Res;
 }
 
-TArray<FIntPoint> AXGridPathFinding::FindPath(const FIntPoint& start, const FIntPoint& target, bool Diagonals)
+TArray<FIntPoint> AXGridPathFinding::FindPath(const FIntPoint& start, const FIntPoint& target, float delay, bool Diagonals)
 {
 	StartIndex = start;
 	TargetIndex = target;
+	Delay = delay;
 	bIncludeDiagonals = Diagonals;
 
 	//清除之前的路径
@@ -188,6 +190,7 @@ TArray<FIntPoint> AXGridPathFinding::FindPath(const FIntPoint& start, const FInt
 	if (!IsInputDataValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Input No Valid"));
+		OnPathFindingCompleted.Broadcast(TArray<FIntPoint>());
 		return TArray<FIntPoint>();
 	}
 
@@ -199,16 +202,22 @@ TArray<FIntPoint> AXGridPathFinding::FindPath(const FIntPoint& start, const FInt
 	StartData.MinimumCostToTarget = MinCostToEnd;
 	//为起点寻找可到的点
 	DiscoverTile(StartData);
-	if(DiscoveredTileIndexed.Num() == 0) UE_LOG(LogTemp, Warning, TEXT("No DiscoveredTileIndexed"));
+	if (Delay > 0.0f)
+	{
+		FindPathWithDelay();
+		return TArray<FIntPoint>();
+	}
 	while (DiscoveredTileIndexed.Num() > 0)
 	{
 		//寻路
 		if (AnalyseNextDiscoveredTile())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Find Way"));
+			OnPathFindingCompleted.Broadcast(GerneratePath());
 			return GerneratePath();
 		}
 	}
+	OnPathFindingCompleted.Broadcast(TArray<FIntPoint>());
 	return TArray<FIntPoint>();
 }
 
@@ -463,5 +472,31 @@ int AXGridPathFinding::GetTileSortingData(const FPathFindingData& TileData)
 	int add = IsDiagonal(TileData.Index, TileData.PreviousIndex) ? 1 : 0;
 	int base = (TileData.CostFromStart + TileData.MinimumCostToTarget) * 2;
 	return add + base;
+}
+
+void AXGridPathFinding::FindPathWithDelay()
+{
+	FLatentActionInfo LatentInfo;
+	LatentInfo.CallbackTarget = this;
+	LatentInfo.ExecutionFunction = FName("FindPathWithDelay");
+	LatentInfo.UUID = 111;
+	GetWorldTimerManager().ClearTimer(ControlFindPathTime);
+	if (DiscoveredTileIndexed.Num() > 0)
+	{
+		if (AnalyseNextDiscoveredTile())
+		{
+			OnPathFindingCompleted.Broadcast(GerneratePath());
+		}
+		else
+		{
+			//RetriggerableDelay会自动重置延迟时间
+			//UKismetSystemLibrary::RetriggerableDelay(this, Delay, LatentInfo);
+			GetWorldTimerManager().SetTimer(ControlFindPathTime, this, &AXGridPathFinding::FindPathWithDelay, Delay, false);
+		}
+	}
+	else
+	{
+		OnPathFindingCompleted.Broadcast(TArray<FIntPoint>());
+	}
 }
 

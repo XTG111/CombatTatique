@@ -10,6 +10,7 @@
 #include "SpawnGrid/XGridPathFinding.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AXDebugTextOnTiles::AXDebugTextOnTiles()
@@ -30,8 +31,8 @@ void AXDebugTextOnTiles::BeginPlay()
 		GridIns->OnGridDestroyed.AddDynamic(this, &AXDebugTextOnTiles::ClearAllTextActors);
 		if (GridIns->XGridPathFinding)
 		{
-			GridIns->XGridPathFinding->OnPathFindingDataCleared.AddDynamic(this, &AXDebugTextOnTiles::UpdateTextOnAllTiles);
-			GridIns->XGridPathFinding->OnPathFindingDataUpdated.AddDynamic(this, &AXDebugTextOnTiles::UpdateTextOnTile);
+			GridIns->XGridPathFinding->OnPathFindingDataUpdated.AddDynamic(this, &AXDebugTextOnTiles::ReUpdateAllTextAfterDelay);
+			GridIns->XGridPathFinding->OnPathFindingDataCleared.AddDynamic(this, &AXDebugTextOnTiles::ReUpdateAllTextAndColorAfterDelay_NoInput);
 		}
 	}
 }
@@ -203,6 +204,24 @@ void AXDebugTextOnTiles::UpdateTextOnAllTiles()
 	}
 }
 
+void AXDebugTextOnTiles::ReUpdateAllTextAfterDelay(FIntPoint index)
+{
+	GetWorld()->GetTimerManager().SetTimer(UpdateAllTextTimer, this, &AXDebugTextOnTiles::DelayFunc, 0.1f, false);
+}
+
+void AXDebugTextOnTiles::ReUpdateAllTextAndColorAfterDelay_NoInput()
+{
+	GetWorld()->GetTimerManager().SetTimer(UpdateAllTextNoInputTimer, this, &AXDebugTextOnTiles::DelayFunc, 0.1f, false);
+}
+
+void AXDebugTextOnTiles::DelayFunc()
+{
+	GetWorld()->GetTimerManager().ClearTimer(UpdateAllTextTimer);
+	GetWorld()->GetTimerManager().ClearTimer(UpdateAllTextNoInputTimer);
+	UpdateTextOnAllTiles();
+	UpdateStateOnAllTile();
+}
+
 bool AXDebugTextOnTiles::WantToDisplayAnyText()
 {
 	return bShowTileIndexes || 
@@ -221,6 +240,70 @@ void AXDebugTextOnTiles::SetShowTileIndexes(bool bstl, bool bsctet, bool bsmctt,
 	bShowSortOrder = bsso;
 	UpdateTextOnAllTiles();
 }
+
+void AXDebugTextOnTiles::UpdateStateOnTile(FIntPoint index)
+{
+	if (!GridIns || !GridIns->XGridPathFinding) return;
+	if (bShowDiscoveredTiles)
+	{
+		if (GridIns->XGridPathFinding->DiscoveredTileIndexed.Contains(index))
+		{
+			GridIns->AddStateToTile(index, ETileState::ETT_IsDiscovered);
+		}
+		else
+		{
+			GridIns->RemoveStateFromTile(index, ETileState::ETT_IsDiscovered);
+		}
+	}
+	else
+	{
+		GridIns->RemoveStateFromTile(index, ETileState::ETT_IsDiscovered);
+	}
+
+	if (bShowAnalysedTiles)
+	{
+		if (GridIns->XGridPathFinding->DiscoveredTileIndexed.Contains(index))
+		{
+			GridIns->AddStateToTile(index, ETileState::ETT_IsAnalysed);
+		}
+		else
+		{
+			GridIns->RemoveStateFromTile(index, ETileState::ETT_IsAnalysed);
+		}
+	}
+	else
+	{
+		GridIns->RemoveStateFromTile(index, ETileState::ETT_IsAnalysed);
+	}
+}
+	
+
+void AXDebugTextOnTiles::UpdateStateOnAllTile()
+{
+	if (!GridIns) return;
+	bool check = bShowDiscoveredTiles || bShowAnalysedTiles;
+	if (check)
+	{
+		for (auto& it : GridIns->GridTiles)
+		{
+			UpdateStateOnTile(it.Key);
+		}
+	}
+	else
+	{
+		GridIns->ClearStateFromTiles(ETileState::ETT_IsDiscovered);
+		GridIns->ClearStateFromTiles(ETileState::ETT_IsAnalysed);
+	}
+}
+
+void AXDebugTextOnTiles::SetShowTileStates(bool bsdt, bool bsat)
+{
+	bShowDiscoveredTiles = bsdt;
+	bShowAnalysedTiles = bsat;
+	UpdateStateOnAllTile();
+}
+
+
 
 bool AXDebugTextOnTiles::IsTileWalkAble(ETileType type)
 {

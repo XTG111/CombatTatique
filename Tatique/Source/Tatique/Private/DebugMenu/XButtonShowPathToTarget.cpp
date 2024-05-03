@@ -8,6 +8,7 @@
 #include "Pawn/XSelectorContorlActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pawn/XFindingPathToTargetAction.h"
+#include "DebugMenu/XSpinwithNameWidget.h"
 
 void UXButtonShowPathToTarget::NativeConstruct()
 {
@@ -17,6 +18,7 @@ void UXButtonShowPathToTarget::NativeConstruct()
 		PlayerActions->OnSelectionActionChange.AddDynamic(this, &UXButtonShowPathToTarget::OnSelectedActionsChanged);
 	}
 	CheckBox_IncludeDiagonals->OnCheckStateChanged.AddDynamic(this, &UXButtonShowPathToTarget::SelecChange);
+	W_SpinBox_Delay->OnValueChangedSelf.AddDynamic(this, &UXButtonShowPathToTarget::SetDelay);
 }
 
 void UXButtonShowPathToTarget::OnSelectedActionsChanged(AXPlayerActions* leftclickaction, AXPlayerActions* rightclickaction)
@@ -27,10 +29,13 @@ void UXButtonShowPathToTarget::OnSelectedActionsChanged(AXPlayerActions* leftcli
 		if (actor)
 		{
 			actor->bIncludeDiagonals = CheckBox_IncludeDiagonals->IsChecked();
+			actor->Delay = W_SpinBox_Delay->Value;
+			W_SpinBox_Delay->SetVisibility(ESlateVisibility::Visible);
 			CheckBox_IncludeDiagonals->SetVisibility(ESlateVisibility::Visible);
 		}
 		else
 		{
+			W_SpinBox_Delay->SetVisibility(ESlateVisibility::Collapsed);
 			CheckBox_IncludeDiagonals->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
@@ -44,10 +49,33 @@ void UXButtonShowPathToTarget::SelecChange(bool bIsChecked)
 		if (actor)
 		{
 			actor->bIncludeDiagonals = CheckBox_IncludeDiagonals->IsChecked();
+			actor->Delay = W_SpinBox_Delay->Value;
+			W_SpinBox_Delay->SetVisibility(ESlateVisibility::Visible);
 			CheckBox_IncludeDiagonals->SetVisibility(ESlateVisibility::Visible);
 		}
 		else
 		{
+			W_SpinBox_Delay->SetVisibility(ESlateVisibility::Collapsed);
+			CheckBox_IncludeDiagonals->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+}
+
+void UXButtonShowPathToTarget::SetDelay(float delay)
+{
+	if (PlayerActions)
+	{
+		AXFindingPathToTargetAction* actor = Cast<AXFindingPathToTargetAction>(PlayerActions->SelecetAction_RightCheck);
+		if (actor)
+		{
+			actor->bIncludeDiagonals = CheckBox_IncludeDiagonals->IsChecked();
+			actor->Delay = W_SpinBox_Delay->Value;
+			W_SpinBox_Delay->SetVisibility(ESlateVisibility::Visible);
+			CheckBox_IncludeDiagonals->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			W_SpinBox_Delay->SetVisibility(ESlateVisibility::Collapsed);
 			CheckBox_IncludeDiagonals->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}

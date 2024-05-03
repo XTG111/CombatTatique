@@ -8,19 +8,30 @@
 #include "Misc/DateTime.h"
 #include "Internationalization/Internationalization.h"
 
+
+void UXSpinwithNameWidget::NativePreConstruct()
+{
+	TextBlock_Name->SetText(Name);
+	SetSpinBox();
+}
 void UXSpinwithNameWidget::NativeConstruct()
 {
-	// 获取当前时间
-	FDateTime CurrentTime = FDateTime::Now();
-
-	// 格式化时间为字符串
-	FString CurrentTimeString = FDateTime::UtcNow().ToString(TEXT("%Y-%m-%d %H:%M:%S"));
-
-	//Super::NativePreConstruct();
-	bool check = TextBlock_Name && SpinBox_Value;
-	if (!check) return;
-	//UE_LOG(LogTemp, Warning, TEXT("The XSpinwithNameWidget, Current Time: %d"), count);
+	{
+		//// 获取当前时间
+		//FDateTime CurrentTime = FDateTime::Now();
+		//// 格式化时间为字符串
+		//FString CurrentTimeString = FDateTime::UtcNow().ToString(TEXT("%Y-%m-%d %H:%M:%S"));
+		////Super::NativePreConstruct();
+		//bool check = TextBlock_Name && SpinBox_Value;
+		//
+		//if (!check) return;
+		////UE_LOG(LogTemp, Warning, TEXT("The XSpinwithNameWidget, Current Time: %d"), count);
+	}
+	GetWorld()->GetTimerManager().SetTimer(DelayCanCall, this, &UXSpinwithNameWidget::ControlCanCall, 0.01f, false);
+	SpinBox_Value->OnValueChanged.AddDynamic(this, &UXSpinwithNameWidget::SetValue);
 }
+
+
 
 void UXSpinwithNameWidget::SetSpinBox()
 {
@@ -35,6 +46,20 @@ void UXSpinwithNameWidget::SetSpinBox()
 	SpinBox_Value->SetMaxFractionalDigits(MaxFractionalValue);
 	SpinBox_Value->SetAlwaysUsesDeltaSnap(AlwaysUsesDeltaSnap);
 	SpinBox_Value->SetDelta(Delta);
+}
+
+void UXSpinwithNameWidget::ControlCanCall()
+{
+	bOnCall = true;
+}
+
+void UXSpinwithNameWidget::SetValue(float dvalue)
+{
+	if (bOnCall)
+	{
+		Value = dvalue;
+		OnValueChangedSelf.Broadcast(Value);
+	}
 }
 
 void UXSpinwithNameWidget::SteDefaultValue(const float dvalue)

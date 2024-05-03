@@ -24,5 +24,7 @@ enum class ETileState :uint8
 	ETT_Selected UMETA(DisplayName = "Selected"),
 	ETT_IsNeighbored UMETA(DisplayName = "IsNeighbored"),
 	ETT_IsInPath UMETA(DisplayName = "IsInPath"),
+	ETT_IsDiscovered UMETA(DisplayName = "IsDiscovered"),
+	ETT_IsAnalysed UMETA(DisplayName = "IsAnalysed"),
 };
 

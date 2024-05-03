@@ -15,7 +15,8 @@ void UX_Tab_PathFinding::NativeConstruct()
 	CheckBox_ShowMinCostToTarget->SetIsChecked(DebugTextsOnTilesActor->bShowMinCostToTarget);
 	CheckBox_ShowCostFromStart->SetIsChecked(DebugTextsOnTilesActor->bShowCostFromStart);
 	CheckBox_ShowSortOrder->SetIsChecked(DebugTextsOnTilesActor->bShowSortOrder);
-
+	CheckBox_ShowDiscoveredTiles->SetIsChecked(DebugTextsOnTilesActor->bShowDiscoveredTiles);
+	CheckBox_ShowAnalysedTiles->SetIsChecked(DebugTextsOnTilesActor->bShowAnalysedTiles);
 
 
 	CheckBox_ShowIndexesOnTiles->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowTileIndexes);
@@ -23,7 +24,8 @@ void UX_Tab_PathFinding::NativeConstruct()
 	CheckBox_ShowMinCostToTarget->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowMinCostToTarget);
 	CheckBox_ShowCostFromStart->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowCostFromStart);
 	CheckBox_ShowSortOrder->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowSortOrder);
-
+	CheckBox_ShowDiscoveredTiles->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowDiscoveredTiles);
+	CheckBox_ShowAnalysedTiles->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowAnalysedTiles);
 }	
 
 void UX_Tab_PathFinding::SetShowTileIndexes(bool bsti)
@@ -79,4 +81,16 @@ void UX_Tab_PathFinding::SetShowSortOrder(bool bsso)
 		bShowCostFromStart,
 		bShowSortOrder
 	);
+}
+
+void UX_Tab_PathFinding::SetShowDiscoveredTiles(bool bsdt)
+{
+	bShowDiscoveredTiles = bsdt;
+	DebugTextsOnTilesActor->SetShowTileStates(bShowDiscoveredTiles, bShowAnalysedTiles);
+}
+
+void UX_Tab_PathFinding::SetShowAnalysedTiles(bool bsat)
+{
+	bShowAnalysedTiles = bsat;
+	DebugTextsOnTilesActor->SetShowTileStates(bShowDiscoveredTiles, bShowAnalysedTiles);
 }

@@ -15,21 +15,26 @@ void AXFindingPathToTargetAction::ExecuteAction(FIntPoint index)
 		UE_LOG(LogTemp, Warning, TEXT("No PlayerAction!!!!!!!!!!"));
 		return;
 	}
-	if (PlayerAction->GridIns)
+	if (PlayerAction->GridIns && PlayerAction->GridIns->XGridPathFinding)
 	{
 		PlayerAction->GridIns->ClearStateFromTiles(ETileState::ETT_IsInPath);
-		TArray<FIntPoint> Path = PlayerAction->GridIns->XGridPathFinding->FindPath(PlayerAction->SelectedTile, index, bIncludeDiagonals);
-		if(Path.Num() == 0) UE_LOG(LogTemp, Warning, TEXT("No Path"));
-		for (auto& it : Path)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("PathFind"));
-			PlayerAction->GridIns->AddStateToTile(it, ETileState::ETT_IsInPath);
-		}
+		PlayerAction->GridIns->XGridPathFinding->OnPathFindingCompleted.Clear();
+		PlayerAction->GridIns->XGridPathFinding->OnPathFindingCompleted.AddDynamic(this, 
+				&AXFindingPathToTargetAction::OnPathFindingCompleted
+			);
+		TArray<FIntPoint> Path = PlayerAction->GridIns->XGridPathFinding->FindPath(PlayerAction->SelectedTile, index, Delay, bIncludeDiagonals);
 	}
-	
 }
 
 void AXFindingPathToTargetAction::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	ExecuteAction({ -999, -999 });
+}
+
+void AXFindingPathToTargetAction::OnPathFindingCompleted(TArray<FIntPoint> Path)
+{
+	for (auto& it : Path)
+	{
+		PlayerAction->GridIns->AddStateToTile(it, ETileState::ETT_IsInPath);
+	}
 }

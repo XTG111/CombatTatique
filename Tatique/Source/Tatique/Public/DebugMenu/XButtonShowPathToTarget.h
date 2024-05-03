@@ -23,12 +23,17 @@ public:
 		class  UTextBlock* TextBlock_IncludeDiagonals;
 	UPROPERTY(meta = (BindWidget))
 		class UCheckBox* CheckBox_IncludeDiagonals;
+	UPROPERTY(meta = (BindWidget))
+		class UXSpinwithNameWidget* W_SpinBox_Delay;
 	UPROPERTY(VisibleAnywhere)
 		class AXSelectorContorlActor* PlayerActions;
+
 public:
 	UFUNCTION()
 		void OnSelectedActionsChanged(class AXPlayerActions* leftclickaction, AXPlayerActions* rightclickaction);
 	UFUNCTION()
 		void SelecChange(bool bIsChecked);
+	UFUNCTION()
+		void SetDelay(float delay);
 	
 };

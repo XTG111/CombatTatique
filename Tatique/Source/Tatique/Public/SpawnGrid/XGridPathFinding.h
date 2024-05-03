@@ -12,6 +12,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPathFindingDataUpdated, FIntPoint, param1);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPathFindingDataCleared);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPathFindingCompleted, TArray<FIntPoint>, param1);
+
 UCLASS()
 class TATIQUE_API AXGridPathFinding : public AActor
 {
@@ -48,7 +50,7 @@ public:
 	* Use For Path Finding
 	*/
 	//寻路函数
-	TArray<FIntPoint> FindPath(const FIntPoint& start, const FIntPoint& target, bool Diagonals);
+	TArray<FIntPoint> FindPath(const FIntPoint& start, const FIntPoint& target, float delay, bool Diagonals);
 	//判断输入数据是否有效 start target
 	bool IsInputDataValid();
 	//向结果数组添加节点
@@ -74,13 +76,16 @@ public:
 	bool IsDiagonal(FIntPoint index1, FIntPoint index2);
 	//计算消耗
 	int GetTileSortingData(const FPathFindingData& TileData);
+	//延迟生成函数
+	UFUNCTION()
+		void FindPathWithDelay();
 
 public:
 	//传入的起点和终点
-	UPROPERTY(VisibleAnywhere)
-		FIntPoint StartIndex;
-	UPROPERTY(VisibleAnywhere)
-		FIntPoint TargetIndex;
+	FIntPoint StartIndex;
+	FIntPoint TargetIndex;
+	//控制延迟生成
+	float Delay;
 	//是否考虑对角线移动
 	bool bIncludeDiagonals;
 	//遍历时的邻接点存储数组
@@ -104,9 +109,13 @@ public:
 	//当前邻接点的方格
 	UPROPERTY(VisibleAnywhere)
 		FPathFindingData CurrentNeighbor;
+
+	FTimerHandle ControlFindPathTime;
 public:
 	UPROPERTY(VisibleAnywhere)
 		FOnPathFindingDataUpdated OnPathFindingDataUpdated;
 	UPROPERTY(VisibleAnywhere)
 		FOnPathFindingDataCleared OnPathFindingDataCleared;
+	UPROPERTY(VisibleAnywhere)
+		FOnPathFindingCompleted OnPathFindingCompleted;
 };

@@ -25,6 +25,10 @@ public:
 		void SetShowCostFromStart(bool bscfs);
 	UFUNCTION()
 		void SetShowSortOrder(bool bsso);
+	UFUNCTION()
+		void SetShowDiscoveredTiles(bool bsdt);
+	UFUNCTION()
+		void SetShowAnalysedTiles(bool bsat);
 public:
 	UPROPERTY(VisibleAnywhere)
 		class AXDebugTextOnTiles* DebugTextsOnTilesActor;
@@ -48,11 +52,17 @@ public:
 		class UCheckBox* CheckBox_ShowCostFromStart;
 	UPROPERTY(meta = (BindWidget))
 		class UCheckBox* CheckBox_ShowSortOrder;
+	UPROPERTY(meta = (BindWidget))
+		class UCheckBox* CheckBox_ShowDiscoveredTiles;
+	UPROPERTY(meta = (BindWidget))
+		class UCheckBox* CheckBox_ShowAnalysedTiles;
 
 	bool bShowIndexesOnTiles = false;
 	bool bShowCostToEnterTile = false;
 	bool bShowMinCostToTarget = false;
 	bool bShowCostFromStart = false;
 	bool bShowSortOrder = false;
+	bool bShowDiscoveredTiles = false;
+	bool bShowAnalysedTiles = false;
 	
 };
