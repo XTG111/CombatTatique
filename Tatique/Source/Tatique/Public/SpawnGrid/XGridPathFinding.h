@@ -5,8 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Pawn/XStructInfo.h"
-#include "D:/UnrealProject/CombatTatique_W/CombatTatique/Tatique/Source/Tatique/XHeadFile/GridShapeEnum.h"
 #include "XGridPathFinding.generated.h"
+
+
+//两个委托，分别用于在显示数据时进行广播
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPathFindingDataUpdated, FIntPoint, param1);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPathFindingDataCleared);
 
 UCLASS()
 class TATIQUE_API AXGridPathFinding : public AActor
@@ -51,6 +55,9 @@ public:
 	void DiscoverTile(const FPathFindingData& TilePathData);
 	//计算两个点之间的消耗 -- 用于估计终点和途径点的消耗
 	int GetMinimumCostBetweenTwoTiles(const FIntPoint& index1, const FIntPoint& index2, bool Diagonals);
+	int CaculateCostForSquare(const FIntPoint& index1, const FIntPoint& index2, bool Diagonals);
+	int CaculateCostForHexagon(const FIntPoint& index1, const FIntPoint& index2);
+	int CaculateCostForTriangle(const FIntPoint& index1, const FIntPoint& index2, bool Diagonals);
 	//分析邻接点是否是下一个途径点，并且判断是否是终点
 	bool AnalyseNextDiscoveredTile();
 	//生成最短路径
@@ -63,6 +70,10 @@ public:
 	void InsertTileInDiscoveredArray(const FPathFindingData& TileData);
 	//清除之前的数据
 	void ClearGenerateData();
+	//判断点是否为斜路径上的点
+	bool IsDiagonal(FIntPoint index1, FIntPoint index2);
+	//计算消耗
+	int GetTileSortingData(const FPathFindingData& TileData);
 
 public:
 	//传入的起点和终点
@@ -93,5 +104,9 @@ public:
 	//当前邻接点的方格
 	UPROPERTY(VisibleAnywhere)
 		FPathFindingData CurrentNeighbor;
-
+public:
+	UPROPERTY(VisibleAnywhere)
+		FOnPathFindingDataUpdated OnPathFindingDataUpdated;
+	UPROPERTY(VisibleAnywhere)
+		FOnPathFindingDataCleared OnPathFindingDataCleared;
 };

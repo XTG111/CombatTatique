@@ -17,6 +17,14 @@ public:
 	virtual void NativeConstruct() override;
 	UFUNCTION()
 		void SetShowTileIndexes(bool bsti);
+	UFUNCTION()
+		void SetShowCostToEnterTile(bool bsctet);
+	UFUNCTION()
+		void SetShowMinCostToTarget(bool bsmctt);
+	UFUNCTION()
+		void SetShowCostFromStart(bool bscfs);
+	UFUNCTION()
+		void SetShowSortOrder(bool bsso);
 public:
 	UPROPERTY(VisibleAnywhere)
 		class AXDebugTextOnTiles* DebugTextsOnTilesActor;
@@ -27,6 +35,24 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UXButtonShowPathToTarget* W_Button_Action_ShowPathToTarget;
 	UPROPERTY(meta = (BindWidget))
+		class UXCaculateMinCost* W_Button_Action_CaculateMinCost;
+
+
+	UPROPERTY(meta = (BindWidget))
 		class UCheckBox* CheckBox_ShowIndexesOnTiles;
+	UPROPERTY(meta = (BindWidget))
+		class UCheckBox* CheckBox_ShowCostToEnterTile;
+	UPROPERTY(meta = (BindWidget))
+		class UCheckBox* CheckBox_ShowMinCostToTarget;
+	UPROPERTY(meta = (BindWidget))
+		class UCheckBox* CheckBox_ShowCostFromStart;
+	UPROPERTY(meta = (BindWidget))
+		class UCheckBox* CheckBox_ShowSortOrder;
+
+	bool bShowIndexesOnTiles = false;
+	bool bShowCostToEnterTile = false;
+	bool bShowMinCostToTarget = false;
+	bool bShowCostFromStart = false;
+	bool bShowSortOrder = false;
 	
 };

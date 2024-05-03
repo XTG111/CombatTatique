@@ -3,6 +3,7 @@
 
 #include "SpawnGrid/XGridPathFinding.h"
 #include "SpawnGrid/XGrid.h"
+#include "D:/UnrealProject/CombatTatique_W/CombatTatique/Tatique/Source/Tatique/XHeadFile/GridShapeEnum.h"
 
 // Sets default values
 AXGridPathFinding::AXGridPathFinding()
@@ -236,9 +237,32 @@ void AXGridPathFinding::DiscoverTile(const FPathFindingData& TilePathData)
 	PathFindingData.Add(TilePathData.Index, TilePathData);
 	//PathFindingData[TilePathData.Index] =  TilePathData;
 	InsertTileInDiscoveredArray(TilePathData);
+	//进行广播，该方格使得在显示文字的类中进行调用对应函数
+	OnPathFindingDataUpdated.Broadcast(TilePathData.Index);
+
 }
 
 int AXGridPathFinding::GetMinimumCostBetweenTwoTiles(const FIntPoint& index1, const FIntPoint& index2, bool Diagonals)
+{
+	int Res;
+	switch (GridIns->GridShape)
+	{
+	case EGridShapEnum::EGS_None:
+		break;
+	case EGridShapEnum::EGS_Square:
+		Res = CaculateCostForSquare(index1, index2, Diagonals);
+		break;
+	case EGridShapEnum::EGS_Triangle:
+		Res = CaculateCostForTriangle(index1, index2, Diagonals);
+		break;
+	case EGridShapEnum::EGS_Hexagon:
+		Res = CaculateCostForHexagon(index1, index2);
+		break;
+	}
+	return Res;
+}
+
+int AXGridPathFinding::CaculateCostForSquare(const FIntPoint& index1, const FIntPoint& index2, bool Diagonals)
 {
 	auto temp = index1 - index2;
 	temp.X = abs(temp.X);
@@ -250,6 +274,53 @@ int AXGridPathFinding::GetMinimumCostBetweenTwoTiles(const FIntPoint& index1, co
 	else
 	{
 		return temp.X + temp.Y;
+	}
+}
+
+int AXGridPathFinding::CaculateCostForHexagon(const FIntPoint& index1, const FIntPoint& index2)
+{
+	auto temp = index1 - index2;
+	temp.X = abs(temp.X);
+	temp.Y = abs(temp.Y);
+	int res = temp.X + (temp.Y - temp.X) / 2 > 0 ? (temp.Y - temp.X) / 2 : 0;
+	return res;
+}
+
+int AXGridPathFinding::CaculateCostForTriangle(const FIntPoint& index1, const FIntPoint& index2, bool Diagonals)
+{
+	auto temp = index1 - index2;
+	temp.X = abs(temp.X);
+	temp.Y = abs(temp.Y);
+	if (Diagonals)
+	{
+		return temp.X + temp.Y;
+	}
+	else
+	{
+		int x = temp.X;
+		int y = temp.Y;
+		bool control1 = index2.X < index1.X;
+		bool control2 = IsIntEven(index1.X) == IsIntEven(index1.Y);
+		bool choose1 = control1 ? (x <= y) : ((x - 1) <= y);
+		bool choose2 = control1 ? ((x - 1) <= y) : (x <= y);
+		bool choose = control2 ? choose2 : choose1;
+		if (choose)
+		{
+			return x + y;
+		}
+		else
+		{
+			if (IsIntEven(x) == IsIntEven(y))
+			{
+				return x * 2;
+			}
+			else
+			{
+				int param1 = control1 ? -1 : 1;
+				int param2 = control2 ? param1 : param1 * (-1);
+				return x * 2 + param2;
+			}
+		}
 	}
 }
 
@@ -341,7 +412,7 @@ bool AXGridPathFinding::DiscoverNextNeighbor()
 void AXGridPathFinding::InsertTileInDiscoveredArray(const FPathFindingData& TileData)
 {
 	//计算当前点的消耗
-	int SortingData = TileData.CostFromStart + TileData.MinimumCostToTarget;
+	int SortingData = GetTileSortingData(TileData);
 	//如果排序数组长度为0，或者当前点的SortingData比排序数组中都大，那么直接压入
 	if (DiscoveredTileSortingCosts.Num() == 0)
 	{
@@ -377,5 +448,20 @@ void AXGridPathFinding::ClearGenerateData()
 	DiscoveredTileSortingCosts.Empty();
 	DiscoveredTileIndexed.Empty();
 	AnalysedTileIndex.Empty();
+	OnPathFindingDataCleared.Broadcast();
+}
+
+bool AXGridPathFinding::IsDiagonal(FIntPoint index1, FIntPoint index2)
+{
+	//通过GetNeighborIndexes查询不包含斜方向上的点数组，判断Index2是否在其中
+	bool res = GetNeighborIndexes(index1, false).Contains(index2);
+	return !res;
+}
+
+int AXGridPathFinding::GetTileSortingData(const FPathFindingData& TileData)
+{
+	int add = IsDiagonal(TileData.Index, TileData.PreviousIndex) ? 1 : 0;
+	int base = (TileData.CostFromStart + TileData.MinimumCostToTarget) * 2;
+	return add + base;
 }
 

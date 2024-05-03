@@ -7,6 +7,9 @@
 #include "SpawnGrid/XGrid.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pawn/XStructInfo.h"
+#include "SpawnGrid/XGridPathFinding.h"
+#include "Kismet/KismetStringLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AXDebugTextOnTiles::AXDebugTextOnTiles()
@@ -25,6 +28,11 @@ void AXDebugTextOnTiles::BeginPlay()
 	{
 		GridIns->OnTileDataUpdated.AddDynamic(this, &AXDebugTextOnTiles::UpdateTextOnTile);
 		GridIns->OnGridDestroyed.AddDynamic(this, &AXDebugTextOnTiles::ClearAllTextActors);
+		if (GridIns->XGridPathFinding)
+		{
+			GridIns->XGridPathFinding->OnPathFindingDataCleared.AddDynamic(this, &AXDebugTextOnTiles::UpdateTextOnAllTiles);
+			GridIns->XGridPathFinding->OnPathFindingDataUpdated.AddDynamic(this, &AXDebugTextOnTiles::UpdateTextOnTile);
+		}
 	}
 }
 
@@ -60,7 +68,7 @@ ATextRenderActor* AXDebugTextOnTiles::GetTextActor(FIntPoint index)
 
 void AXDebugTextOnTiles::DestroyTextActor(FIntPoint index)
 {
-	ATextRenderActor* Actor = *(SpawnedTexts.Find(index));
+	ATextRenderActor* Actor = SpawnedTexts.FindRef(index);
 	if (Actor)
 	{
 		Actor->Destroy();
@@ -80,6 +88,7 @@ void AXDebugTextOnTiles::ClearAllTextActors()
 void AXDebugTextOnTiles::UpdateTextOnTile(FIntPoint index)
 {
 	if (!bShowTileIndexes || !GridIns) return;
+	if (!WantToDisplayAnyText()) return;
 	FTileDataStruct* Data = GridIns->GridTiles.Find(index);
 	if (Data)
 	{
@@ -90,27 +99,98 @@ void AXDebugTextOnTiles::UpdateTextOnTile(FIntPoint index)
 		}
 		else
 		{
-			ATextRenderActor* TextActor = GetTextActor(index);
-			FString text = FString::Printf(TEXT("%d.%d"), index.X, index.Y);
-			TextActor->GetTextRender()->SetText(FText::FromString(text));
-			FTransform trans;
-			trans.SetLocation(Data->Transform.GetLocation() + FVector(0.0f, 0.0f, 1.0f));
-			trans.SetRotation(FQuat(FRotator{ 90.0f,0.0f,180.0f }));
-			trans.SetScale3D(FVector{ 2.0f,2.0f,2.0f });
-			TextActor->SetActorTransform(trans, false);
+			TArray<FString> Text;
+			TArray<int> TextLength;
+			if (bShowTileIndexes)
+			{
+				FString text = FString::Printf(TEXT("%d.%d"), index.X, index.Y);
+				Text.Add(text);
+				TextLength.Add(text.Len());
+			}
+			if (bShowCostToEnterTile || bShowMinCostToTarget || bShowCostFromStart || bShowSortOrder)
+			{
+				if (GridIns->XGridPathFinding->PathFindingData.Find(index))
+				{
+					FPathFindingData PathFindingData = *(GridIns->XGridPathFinding->PathFindingData.Find(index));
+
+					if (bShowCostToEnterTile)
+					{
+						FString text = FString::Printf(TEXT("Enter:%d"), PathFindingData.CostToEnterTile);
+						Text.Add(text);
+						TextLength.Add(text.Len());
+					}
+					if (bShowMinCostToTarget)
+					{
+						if (PathFindingData.MinimumCostToTarget != 999999)
+						{
+							FString text = FString::Printf(TEXT("Min:%d"), PathFindingData.MinimumCostToTarget);
+							Text.Add(text);
+							TextLength.Add(text.Len());
+						}
+					}
+					if (bShowCostFromStart)
+					{
+						if (PathFindingData.CostFromStart != 999999)
+						{
+							FString text = FString::Printf(TEXT("Start:%d"), PathFindingData.CostFromStart);
+							Text.Add(text);
+							TextLength.Add(text.Len());
+						}
+					}
+					if (bShowSortOrder)
+					{
+						if (GridIns->XGridPathFinding->DiscoveredTileIndexed.Find(index) != -1)
+						{
+							int param1 = GridIns->XGridPathFinding->DiscoveredTileIndexed.Find(index);
+							int sort = GridIns->XGridPathFinding->DiscoveredTileSortingCosts[param1];
+							FString text = FString::Printf(TEXT("Sort:%d(%d)"), param1, sort);
+							Text.Add(text);
+							TextLength.Add(text.Len());
+						}
+					}
+				}
+			}
+			if (Text.Num() > 0)
+			{
+				ATextRenderActor* TextActor = GetTextActor(index);
+				TextActor->GetTextRender()->SetText(FText::FromString(UKismetStringLibrary::JoinStringArray(Text,"\n")));
+				FTransform trans;
+				trans.SetLocation(Data->Transform.GetLocation() + FVector(0.0f, 0.0f, 1.0f));
+				trans.SetRotation(FQuat(FRotator{ 90.0f,0.0f,180.0f }));
+
+				float scalecontorl;
+				if (GridIns->GridShape == EGridShapEnum::EGS_Triangle)
+				{
+					scalecontorl = 30.0f;
+				}
+				else
+				{
+					scalecontorl = 15.0f;
+				}
+				int indexmax;
+				int maxvalue;
+				UKismetMathLibrary::MaxOfIntArray(TextLength, indexmax, maxvalue);
+				
+				float midval = GridIns->TileSize.Y / ( maxvalue * scalecontorl);
+				FVector scale{ midval,midval,midval };
+				trans.SetScale3D(scale);
+				TextActor->SetActorTransform(trans, false);
+			}
+			else
+			{
+				DestroyTextActor(index);
+			}
 		}
 	}
 	else
 	{
 		DestroyTextActor(index);
 	}
-	
 }
 
-void AXDebugTextOnTiles::SetShowTileIndexes(bool bstl)
+void AXDebugTextOnTiles::UpdateTextOnAllTiles()
 {
-	bShowTileIndexes = bstl;
-	if (bShowTileIndexes)
+	if (WantToDisplayAnyText())
 	{
 		for (auto& it : GridIns->GridTiles)
 		{
@@ -121,6 +201,25 @@ void AXDebugTextOnTiles::SetShowTileIndexes(bool bstl)
 	{
 		ClearAllTextActors();
 	}
+}
+
+bool AXDebugTextOnTiles::WantToDisplayAnyText()
+{
+	return bShowTileIndexes || 
+		bShowCostToEnterTile  || 
+		bShowMinCostToTarget || 
+		bShowCostFromStart || 
+		bShowSortOrder;
+}
+
+void AXDebugTextOnTiles::SetShowTileIndexes(bool bstl, bool bsctet, bool bsmctt, bool bcfs, bool bsso)
+{
+	bShowTileIndexes = bstl;
+	bShowCostToEnterTile = bsctet;
+	bShowMinCostToTarget = bsmctt;
+	bShowCostFromStart = bcfs;
+	bShowSortOrder = bsso;
+	UpdateTextOnAllTiles();
 }
 
 bool AXDebugTextOnTiles::IsTileWalkAble(ETileType type)

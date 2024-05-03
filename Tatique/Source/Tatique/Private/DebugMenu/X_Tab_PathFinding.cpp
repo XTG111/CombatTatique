@@ -11,11 +11,72 @@ void UX_Tab_PathFinding::NativeConstruct()
 {
 	DebugTextsOnTilesActor = Cast<AXDebugTextOnTiles>(UGameplayStatics::GetActorOfClass(GetWorld(),AXDebugTextOnTiles::StaticClass()));
 	CheckBox_ShowIndexesOnTiles->SetIsChecked(DebugTextsOnTilesActor->bShowTileIndexes);
+	CheckBox_ShowCostToEnterTile->SetIsChecked(DebugTextsOnTilesActor->bShowCostToEnterTile);
+	CheckBox_ShowMinCostToTarget->SetIsChecked(DebugTextsOnTilesActor->bShowMinCostToTarget);
+	CheckBox_ShowCostFromStart->SetIsChecked(DebugTextsOnTilesActor->bShowCostFromStart);
+	CheckBox_ShowSortOrder->SetIsChecked(DebugTextsOnTilesActor->bShowSortOrder);
+
+
 
 	CheckBox_ShowIndexesOnTiles->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowTileIndexes);
-}
+	CheckBox_ShowCostToEnterTile->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowCostToEnterTile);
+	CheckBox_ShowMinCostToTarget->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowMinCostToTarget);
+	CheckBox_ShowCostFromStart->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowCostFromStart);
+	CheckBox_ShowSortOrder->OnCheckStateChanged.AddDynamic(this, &UX_Tab_PathFinding::SetShowSortOrder);
+
+}	
 
 void UX_Tab_PathFinding::SetShowTileIndexes(bool bsti)
 {
-	DebugTextsOnTilesActor->SetShowTileIndexes(bsti);
+	bShowIndexesOnTiles = bsti;
+	DebugTextsOnTilesActor->SetShowTileIndexes(bShowIndexesOnTiles, 
+		bShowCostToEnterTile,
+		bShowMinCostToTarget,
+		bShowCostFromStart,
+		bShowSortOrder
+	);
+}
+
+void UX_Tab_PathFinding::SetShowCostToEnterTile(bool bsctet)
+{
+	bShowCostToEnterTile = bsctet;
+	DebugTextsOnTilesActor->SetShowTileIndexes(bShowIndexesOnTiles,
+		bShowCostToEnterTile,
+		bShowMinCostToTarget,
+		bShowCostFromStart,
+		bShowSortOrder
+	);
+}
+
+void UX_Tab_PathFinding::SetShowMinCostToTarget(bool bsmctt)
+{
+	bShowMinCostToTarget = bsmctt;
+	DebugTextsOnTilesActor->SetShowTileIndexes(bShowIndexesOnTiles,
+		bShowCostToEnterTile,
+		bShowMinCostToTarget,
+		bShowCostFromStart,
+		bShowSortOrder
+	);
+}
+
+void UX_Tab_PathFinding::SetShowCostFromStart(bool bscfs)
+{
+	bShowCostFromStart = bscfs;
+	DebugTextsOnTilesActor->SetShowTileIndexes(bShowIndexesOnTiles,
+		bShowCostToEnterTile,
+		bShowMinCostToTarget,
+		bShowCostFromStart,
+		bShowSortOrder
+	);
+}
+
+void UX_Tab_PathFinding::SetShowSortOrder(bool bsso)
+{
+	bShowSortOrder = bsso;
+	DebugTextsOnTilesActor->SetShowTileIndexes(bShowIndexesOnTiles,
+		bShowCostToEnterTile,
+		bShowMinCostToTarget,
+		bShowCostFromStart,
+		bShowSortOrder
+	);
 }

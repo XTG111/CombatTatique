@@ -28,3 +28,8 @@ void AXFindingPathToTargetAction::ExecuteAction(FIntPoint index)
 	}
 	
 }
+
+void AXFindingPathToTargetAction::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	ExecuteAction({ -999, -999 });
+}

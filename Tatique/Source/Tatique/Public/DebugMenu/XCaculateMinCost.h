@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "XButtonShowPathToTarget.generated.h"
+#include "XCaculateMinCost.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TATIQUE_API UXButtonShowPathToTarget : public UUserWidget
+class TATIQUE_API UXCaculateMinCost : public UUserWidget
 {
 	GENERATED_BODY()
 public:
@@ -18,7 +18,7 @@ public:
 
 public:
 	UPROPERTY(meta = (BindWidget))
-		class UXButtonAction* W_ShowPathToTarget;
+		class UXButtonAction* W_CaculateMinCost;
 	UPROPERTY(meta = (BindWidget))
 		class  UTextBlock* TextBlock_IncludeDiagonals;
 	UPROPERTY(meta = (BindWidget))

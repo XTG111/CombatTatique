@@ -28,3 +28,8 @@ void AXShowTileNeighborsAction::ExecuteAction(FIntPoint index)
 		}
 	}
 }
+
+void AXShowTileNeighborsAction::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	ExecuteAction({-999, -999});
+}

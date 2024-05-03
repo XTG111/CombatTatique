@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Pawn/XPlayerActions.h"
-#include "XFindingPathToTargetAction.generated.h"
+#include "XSelectTileCalculateMinCost.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TATIQUE_API AXFindingPathToTargetAction : public AXPlayerActions
+class TATIQUE_API AXSelectTileCalculateMinCost : public AXPlayerActions
 {
 	GENERATED_BODY()
 public:
 	virtual void ExecuteAction(FIntPoint index) override;
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	//控制是否包含对角线
 	bool bIncludeDiagonals;
+	
 };

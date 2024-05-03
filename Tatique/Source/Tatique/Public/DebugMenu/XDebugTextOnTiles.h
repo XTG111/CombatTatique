@@ -28,7 +28,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class AXGrid* GridIns;
 	TMap<FIntPoint, class ATextRenderActor*> SpawnedTexts;
+	//控制显示哪些信息
 	bool bShowTileIndexes = false;
+	bool bShowCostToEnterTile = false;
+	bool bShowMinCostToTarget = false;
+	bool bShowCostFromStart = false;
+	bool bShowSortOrder = false;
 
 public:
 	//生成获取当前格子对应的TextActor
@@ -41,10 +46,15 @@ public:
 	//为每个TextActor生成Text
 	UFUNCTION()
 		void UpdateTextOnTile(FIntPoint index);
+	UFUNCTION()
+		void UpdateTextOnAllTiles();
+	bool WantToDisplayAnyText();
 
 	//控制是否显示文字
-	void SetShowTileIndexes(bool bstl);
+	void SetShowTileIndexes(bool bstl, bool bsctet,bool bsmctt,bool bcfs, bool bsso);
 
 	bool IsTileWalkAble(ETileType type);
+
+
 
 };

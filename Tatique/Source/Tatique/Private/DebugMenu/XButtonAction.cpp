@@ -34,7 +34,8 @@ void UXButtonAction::SetActions()
 	if (Button_Actions && PlayerActions)
 	{
 		
-		bool temp = UGameplayStatics::GetObjectClass(PlayerActions->SelecetAction_LeftCheck) == LeftAction;
+		bool temp = UGameplayStatics::GetObjectClass(PlayerActions->SelecetAction_LeftCheck) == LeftAction &&
+			UGameplayStatics::GetObjectClass(PlayerActions->SelecetAction_RightCheck) == RightAction;
 		if (temp)
 		{
 			PlayerActions->SetSelectedActions(nullptr, nullptr);
@@ -55,7 +56,8 @@ void UXButtonAction::OnSelectedActionsChanged(AXPlayerActions* leftclickaction, 
 	if (Button_Actions && PlayerActions)
 	{
 		
-		bool temp = UGameplayStatics::GetObjectClass(PlayerActions->SelecetAction_LeftCheck) == LeftAction;
+		bool temp = UGameplayStatics::GetObjectClass(PlayerActions->SelecetAction_LeftCheck) == LeftAction &&
+			UGameplayStatics::GetObjectClass(PlayerActions->SelecetAction_RightCheck) == RightAction;
 		FColor color = temp ? FColor::Cyan : FColor::Black;
 		//UE_LOG(LogTemp, Warning, TEXT("OnSelectedActionsChanged,%d"),temp);
 		Button_Actions->SetBackgroundColor(color);
